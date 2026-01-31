@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Oroz Barber - Barbería profesional con estilo, precisión y actitud">
+  <title>Oroz Barber - Barbería Profesional</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cinzel:wght@400;600;700&family=Inter:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Header/Navbar -->
+  <header class="header">
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="#" class="logo">OROZ BARBER</a>
+        
+        <button class="menu-toggle" aria-label="Abrir menú">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        
+        <ul class="nav-menu">
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#galeria">Galería</a></li>
+          <li><a href="#horarios">Horarios</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+          <li><a href="reservas.html" class="btn-reservar-nav" target="_blank">Reservar</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="inicio" class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="icono-tijeras">
+        <svg viewBox="0 0 24 24">
+          <circle cx="6" cy="6" r="3"></circle>
+          <circle cx="6" cy="18" r="3"></circle>
+          <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
+          <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
+          <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+        </svg>
+      </div>
+      
+      <h1 class="hero-title">OROZ BARBER</h1>
+      <p class="hero-subtitle">Estilo, Precisión y Actitud</p>
+      
+      <a href="reservas.html" class="btn-reservar" target="_blank">Reservar Cita</a>
+      
+      <div class="icono-mouse">
+        <svg viewBox="0 0 24 24">
+          <rect x="5" y="2" width="14" height="20" rx="7"></rect>
+          <path d="M12 6v4"></path>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Servicios Section -->
+  <section id="servicios" class="servicios">
+    <div class="container">
+      <div class="titulo-seccion">
+        <h2>Nuestros Servicios</h2>
+        <div class="linea-dorada"></div>
+      </div>
+
+      <div class="servicios-grid">
+        
+        <div class="servicio-card">
+          <div class="servicio-header">
+            <h3 class="servicio-nombre">Corte sencillo 💇🏻‍♂️</h3>
+            <span class="servicio-precio">$22.000</span>
+          </div>
+          <p class="servicio-descripcion">💈Corte de cabello + cejas + Diseño (opcional)</p>
+          <a href="reservas.html" class="btn-agendar" target="_blank">Agendar Ahora</a>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-header">
+            <h3 class="servicio-nombre">Limpieza Facial 💆🏻</h3>
+            <span class="servicio-precio">$25.000</span>
+          </div>
+          <p class="servicio-descripcion">Dilatación de poros con vaporozono + exfoliación + extracción de espinillas + mascarilla + hidratación</p>
+          <a href="reservas.html" class="btn-agendar" target="_blank">Agendar Ahora</a>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-header">
+            <h3 class="servicio-nombre">Corte premium ⭐️</h3>
+            <span class="servicio-precio">$40.000</span>
+          </div>
+          <p class="servicio-descripcion">Corte de cabello + limpieza facial completa</p>
+          <a href="reservas.html" class="btn-agendar" target="_blank">Agendar Ahora</a>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-header">
+            <h3 class="servicio-nombre">Corte con barba 🧔🏻‍♂️</h3>
+            <span class="servicio-precio">$25.000</span>
+          </div>
+          <p class="servicio-descripcion">💈Corte de cabello + barba + cejas + diseño (opcional)</p>
+          <a href="reservas.html" class="btn-agendar" target="_blank">Agendar Ahora</a>
+        </div>
+
+        <div class="servicio-card">
+          <div class="servicio-header">
+            <h3 class="servicio-nombre">Barba 🧔🏻‍♂️</h3>
+            <span class="servicio-precio">$7.000</span>
+          </div>
+          <p class="servicio-descripcion">Marcación profesional + pigmentación</p>
+          <a href="reservas.html" class="btn-agendar" target="_blank">Agendar Ahora</a>
+        </div>
+
+      </div>
+
+      <div class="btn-container">
+        <a href="reservas.html" class="btn-ver-todos" target="_blank">Ver Todos los Servicios</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Por Qué Elegirnos Section -->
+  <section id="por-que-elegirnos" class="por-que-elegirnos">
+    <div class="container">
+      <div class="titulo-seccion">
+        <h2>¿Por Qué Elegirnos?</h2>
+        <div class="linea-dorada"></div>
+      </div>
+
+      <div class="caracteristicas-grid">
+        
+        <div class="caracteristica-item">
+          <div class="icono-container">
+            <i data-lucide="star"></i>
+          </div>
+          <h3 class="caracteristica-titulo">Atención Profesional</h3>
+          <p class="caracteristica-descripcion">
+            Barberos certificados con años de experiencia en el arte del corte
+          </p>
+        </div>
+
+        <div class="caracteristica-item">
+          <div class="icono-container">
+            <i data-lucide="shield-check"></i>
+          </div>
+          <h3 class="caracteristica-titulo">Máxima Higiene</h3>
+          <p class="caracteristica-descripcion">
+            Herramientas esterilizadas y protocolos de limpieza estrictos
+          </p>
+        </div>
+
+        <div class="caracteristica-item">
+          <div class="icono-container">
+            <i data-lucide="clock"></i>
+          </div>
+          <h3 class="caracteristica-titulo">Puntualidad</h3>
+          <p class="caracteristica-descripcion">
+            Respetamos tu tiempo. Sistema de citas para evitar esperas
+          </p>
+        </div>
+
+        <div class="caracteristica-item">
+          <div class="icono-container">
+            <i data-lucide="award"></i>
+          </div>
+          <h3 class="caracteristica-titulo">Experiencia Premium</h3>
+          <p class="caracteristica-descripcion">
+            Ambiente exclusivo diseñado para tu comodidad y relajación
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Galería Section -->
+  <section id="galeria" class="galeria">
+    <div class="container">
+      <div class="titulo-seccion">
+        <h2>Nuestra Galería</h2>
+        <div class="linea-dorada"></div>
+      </div>
+
+      <div class="galeria-grid">
+        <div class="foto-item">
+          <img src="assets/images/corte1.jpg" alt="Barbería 1">
+        </div>
+        <div class="foto-item">
+          <img src="assets/images/corte2.jpg" alt="Barbería 2">
+        </div>
+        <div class="foto-item">
+          <img src="assets/images/corte3.jpg" alt="Barbería 3">
+        </div>
+        <div class="foto-item">
+          <img src="assets/images/corte1.jpg" alt="Barbería 4">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Horarios y Ubicación Section -->
+  <section id="horarios" class="horarios-ubicacion">
+    <div class="container">
+      <div class="titulo-seccion">
+        <h2>Horarios y Ubicación</h2>
+        <div class="linea-dorada"></div>
+      </div>
+
+      <div class="info-grid">
+        
+        <div class="info-card">
+          <div class="info-header">
+            <i data-lucide="clock" class="lucide-icon"></i>
+            <h3>Horarios</h3>
+          </div>
+          
+          <div class="horario-item">
+            <span class="dia">Lunes - Viernes</span>
+            <span class="hora">9:00 AM - 8:00 PM</span>
+          </div>
+          
+          <div class="horario-item">
+            <span class="dia">Sábado</span>
+            <span class="hora">9:00 AM - 6:00 PM</span>
+          </div>
+          
+          <div class="horario-item">
+            <span class="dia">Domingo</span>
+            <span class="hora">Cerrado</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-header">
+            <i data-lucide="map-pin" class="lucide-icon"></i>
+            <h3>Ubicación</h3>
+          </div>
+          
+          <p class="direccion">
+            Calle 51 # 21-35 Barrio La Argentina<br>
+            Manizales, Colombia
+          </p>
+          
+          <a href="https://www.google.com/maps/place/Cl.+51+%2321-35,+Manizales,+Caldas/@5.0660236,-75.4991476,17z/data=!3m1!4b1!4m6!3m5!1s0x8e476f89332d17f9:0x322403bfe2bdaab6!8m2!3d5.0660236!4d-75.4965727!16s%2Fg%2F11h8_g68y7?entry=ttu&g_ep=EgoyMDI2MDEyOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-maps">
+            <i data-lucide="navigation" class="lucide-icon-small"></i>
+            Ver en Google Maps
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Contacto Section -->
+  <section id="contacto" class="contacto">
+    <div class="container-contacto">
+      <div class="titulo-seccion">
+        <h2>Contáctanos</h2>
+        <div class="linea-dorada"></div>
+      </div>
+      
+      <p class="subtitulo-contacto">
+        ¿Listo para un nuevo look? Contáctanos y agenda tu cita hoy mismo
+      </p>
+
+      <div class="botones-contacto">
+        
+        <a href="https://wa.me/573123456789" target="_blank" class="btn-contacto btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+          WhatsApp
+        </a>
+
+        <a href="https://www.instagram.com/orozbarber0512/" target="_blank" class="btn-contacto btn-instagram">
+          <i class="fab fa-instagram"></i>
+          Instagram
+        </a>
+
+        <a href="https://www.facebook.com/people/Orozbarber/100093207266315/?ref=pl_edit_xav_ig_profile_page_web#" target="_blank" class="btn-contacto btn-facebook">
+          <i class="fab fa-facebook"></i>
+          Facebook
+        </a>
+
+      </div>
+
+      <a href="reservas.html" class="btn-reservar-grande" target="_blank">
+        Reservar Cita Ahora
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <h3>OROZ BARBER</h3>
+          <p>Estilo, Precisión y Actitud</p>
+        </div>
+        
+        <div class="footer-links">
+          <h4>Enlaces</h4>
+          <ul>
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#galeria">Galería</a></li>
+            <li><a href="#horarios">Horarios</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-contact">
+          <h4>Contacto</h4>
+          <p>📞 +57 302 676 1974</p>
+          <p>📧 info@orozbarber.com</p>
+          <div class="social-links">
+            <a href="https://wa.me/573123456789" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com/orozbarber0512/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.facebook.com/people/Orozbarber/100093207266315/?ref=pl_edit_xav_ig_profile_page_web#" target="_blank" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Oroz Barber. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="js/main.js"></script>
+
+</body>
+</html>

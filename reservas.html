@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Reserva tu cita en Oroz Barber - Elige tu barbero y agenda tu cita">
+  <title>Reservar Cita - Oroz Barber</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cinzel:wght@400;600;700&family=Inter:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/reservas.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header-reservas">
+    <div class="header-overlay"></div>
+    <div class="header-content">
+      <a href="index.html" class="btn-volver">
+        <i class="fas fa-arrow-left"></i> Volver al Inicio
+      </a>
+      <h1>Reserva tu Cita</h1>
+      <p>Elige tu barbero de confianza</p>
+    </div>
+  </header>
+
+  <!-- Sección de Barberos -->
+  <section class="barberos-section">
+    <div class="container">
+      
+      <div class="barberos-grid">
+        
+        <!-- Barbero 1 -->
+        <div class="barbero-card" data-barbero="barbero1">
+          <div class="barbero-imagen">
+            <img src="assets/images/barbero1.jpg" alt="Carlos Rodríguez">
+            <div class="barbero-overlay">
+              <i class="fas fa-calendar-check"></i>
+              <p>Click para reservar</p>
+            </div>
+          </div>
+          <div class="barbero-info">
+            <h3 class="barbero-nombre">Carlos Rodríguez</h3>
+            <p class="barbero-titulo">Barbero Senior</p>
+            <div class="barbero-stats">
+              <div class="stat-item">
+                <i class="fas fa-star"></i>
+                <span>8 años exp.</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-scissors"></i>
+                <span>Especialista en fades</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barbero 2 -->
+        <div class="barbero-card" data-barbero="barbero2">
+          <div class="barbero-imagen">
+            <img src="assets/images/barbero2.jpg" alt="Miguel Ángel">
+            <div class="barbero-overlay">
+              <i class="fas fa-calendar-check"></i>
+              <p>Click para reservar</p>
+            </div>
+          </div>
+          <div class="barbero-info">
+            <h3 class="barbero-nombre">Miguel Ángel</h3>
+            <p class="barbero-titulo">Barbero Profesional</p>
+            <div class="barbero-stats">
+              <div class="stat-item">
+                <i class="fas fa-star"></i>
+                <span>5 años exp.</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-scissors"></i>
+                <span>Experto en barba</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barbero 3 -->
+        <div class="barbero-card" data-barbero="barbero3">
+          <div class="barbero-imagen">
+            <img src="assets/images/barbero3.jpg" alt="Andrés López">
+            <div class="barbero-overlay">
+              <i class="fas fa-calendar-check"></i>
+              <p>Click para reservar</p>
+            </div>
+          </div>
+          <div class="barbero-info">
+            <h3 class="barbero-nombre">Andrés López</h3>
+            <p class="barbero-titulo">Barbero Estilista</p>
+            <div class="barbero-stats">
+              <div class="stat-item">
+                <i class="fas fa-star"></i>
+                <span>6 años exp.</span>
+              </div>
+              <div class="stat-item">
+                <i class="fas fa-scissors"></i>
+                <span>Diseños modernos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Modal de Reserva -->
+  <div id="reservaModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      
+      <div class="modal-header">
+        <h2>Reserva con <span id="barberoNombre"></span></h2>
+        <p>Completa el formulario para confirmar tu cita</p>
+      </div>
+
+      <form id="reservaForm" class="reserva-form">
+        
+        <!-- Campo oculto para el barbero -->
+        <input type="hidden" id="barberoSeleccionado" name="barbero">
+
+        <!-- Información Personal -->
+        <div class="form-section">
+          <h3><i class="fas fa-user"></i> Información Personal</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre Completo *</label>
+              <input type="text" id="nombre" name="nombre" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefono">Teléfono *</label>
+              <input type="tel" id="telefono" name="telefono" placeholder="+57 312 345 6789" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email (opcional)</label>
+              <input type="email" id="email" name="email" placeholder="ejemplo@correo.com">
+            </div>
+          </div>
+        </div>
+
+        <!-- Detalles de la Cita -->
+        <div class="form-section">
+          <h3><i class="fas fa-calendar-alt"></i> Detalles de la Cita</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fecha">Fecha *</label>
+              <input type="date" id="fecha" name="fecha" required>
+            </div>
+            <div class="form-group">
+              <label for="hora">Hora *</label>
+              <select id="hora" name="hora" required>
+                <option value="">Selecciona una hora</option>
+                <option value="09:00">9:00 AM</option>
+                <option value="10:00">10:00 AM</option>
+                <option value="11:00">11:00 AM</option>
+                <option value="12:00">12:00 PM</option>
+                <option value="13:00">1:00 PM</option>
+                <option value="14:00">2:00 PM</option>
+                <option value="15:00">3:00 PM</option>
+                <option value="16:00">4:00 PM</option>
+                <option value="17:00">5:00 PM</option>
+                <option value="18:00">6:00 PM</option>
+                <option value="19:00">7:00 PM</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="servicio">Servicio *</label>
+              <select id="servicio" name="servicio" required>
+                <option value="">Selecciona un servicio</option>
+                <option value="Corte sencillo - $22.000">Corte sencillo - $22.000</option>
+                <option value="Limpieza Facial - $25.000">Limpieza Facial - $25.000</option>
+                <option value="Corte premium - $40.000">Corte premium - $40.000</option>
+                <option value="Corte con barba - $25.000">Corte con barba - $25.000</option>
+                <option value="Barba - $7.000">Barba - $7.000</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="comentarios">Comentarios adicionales (opcional)</label>
+              <textarea id="comentarios" name="comentarios" rows="3" placeholder="Algún detalle especial que debamos saber..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-buttons">
+          <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-confirmar">
+            <i class="fas fa-check"></i> Confirmar Reserva
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Mensaje de éxito -->
+      <div id="mensajeExito" class="mensaje-exito" style="display: none;">
+        <i class="fas fa-check-circle"></i>
+        <h3>¡Reserva Confirmada!</h3>
+        <p>Te hemos enviado un mensaje de confirmación por WhatsApp</p>
+        <button class="btn-cerrar-exito" onclick="cerrarModal()">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="js/reservas.js"></script>
+
+</body>
+</html>
