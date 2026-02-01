@@ -154,15 +154,14 @@ body {
 .hero {
   position: relative;
   height: 100vh;
-  min-height: 600px;
-  background-image: url('../assets/images/oroz-barber.jpeg');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed; /* Efecto parallax en desktop */
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  background-image: url('../assets/images/oroz-barber.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   overflow: hidden;
 }
 
@@ -178,90 +177,63 @@ body {
     rgba(0, 0, 0, 0.5) 50%,
     rgba(0, 0, 0, 0.7) 100%
   );
-  z-index: 1;
 }
 
 .hero-content {
   position: relative;
-  z-index: 2;
-  text-align: center;
+  z-index: 1;
   padding: 20px;
-  animation: fadeInUp 1s ease-out;
-}
-
-/* Iconos animados */
-.icono-tijeras,
-.icono-mouse {
-  color: var(--color-gold);
-  display: inline-block;
 }
 
 .icono-tijeras {
-  margin-bottom: 30px;
+  color: var(--color-gold);
+  margin-bottom: 5px;
   animation: floatUp 3s ease-in-out infinite;
 }
 
 .icono-tijeras svg {
-  width: 80px;
-  height: 80px;
-  stroke: currentColor;
+  width: 60px;
+  height: 60px;
+  stroke: var(--color-gold);
   fill: none;
   stroke-width: 1.5;
 }
 
-.icono-mouse {
-  margin-top: 40px;
-  animation: floatDown 3s ease-in-out infinite;
-}
-
-.icono-mouse svg {
-  width: 40px;
-  height: 40px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 1.5;
-}
-
-/* Títulos del Hero */
 .hero-title {
-  font-size: 80px;
+  font-size: 70px;
   font-weight: 700;
   color: var(--color-white);
-  letter-spacing: 8px;
-  margin-bottom: 20px;
+  letter-spacing: 6px;
+  margin: 0;
   font-family: var(--font-elegant);
   text-transform: uppercase;
+  line-height: 1;
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-  line-height: 1.2;
 }
 
 .hero-subtitle {
-  font-size: 28px;
+  font-size: 24px;
   color: var(--color-gold);
   font-style: italic;
-  margin-bottom: 50px;
+  margin: 10px 0 35px 0;
   font-family: var(--font-serif);
-  font-weight: 400;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
-/* Botón Reservar del Hero */
 .btn-reservar {
   background: var(--color-gold);
   color: var(--color-darker);
-  border: none;
-  padding: 18px 60px;
-  font-size: 18px;
+  padding: 18px 55px;
+  font-size: 16px;
   font-weight: 600;
   border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: var(--font-serif);
   text-transform: uppercase;
   letter-spacing: 2px;
+  text-decoration: none;
   box-shadow: 0 5px 20px rgba(218, 165, 32, 0.3);
   display: inline-block;
-  text-decoration: none;
+  transition: all 0.3s ease;
+  font-family: var(--font-elegant);
 }
 
 .btn-reservar:hover {
@@ -270,101 +242,28 @@ body {
   box-shadow: 0 8px 30px rgba(218, 165, 32, 0.5);
 }
 
-/* Animaciones */
+.icono-mouse {
+  margin-top: 50px;
+  color: var(--color-gold);
+  animation: floatDown 3s ease-in-out infinite;
+}
+
+.icono-mouse svg {
+  width: 35px;
+  height: 35px;
+  stroke: var(--color-gold);
+  fill: none;
+  stroke-width: 1.5;
+}
+
 @keyframes floatUp {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes floatDown {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(20px); }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ========================================
-   RESPONSIVE HERO
-   ======================================== */
-@media (max-width: 768px) {
-  .hero {
-    height: 100vh;
-    min-height: 100vh;
-    background-attachment: scroll; /* IMPORTANTE: Desactiva parallax en móvil */
-    background-position: center center;
-    background-size: cover;
-  }
-
-  .hero-content {
-    padding: 20px 15px;
-  }
-
-  .icono-tijeras svg {
-    width: 60px;
-    height: 60px;
-  }
-
-  .hero-title {
-    font-size: 48px;
-    letter-spacing: 4px;
-  }
-
-  .hero-subtitle {
-    font-size: 20px;
-    margin-bottom: 40px;
-  }
-
-  .btn-reservar {
-    padding: 15px 40px;
-    font-size: 16px;
-    letter-spacing: 1px;
-  }
-
-  .icono-mouse svg {
-    width: 35px;
-    height: 35px;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero {
-    min-height: 100vh;
-  }
-
-  .icono-tijeras svg {
-    width: 50px;
-    height: 50px;
-  }
-
-  .hero-title {
-    font-size: 36px;
-    letter-spacing: 2px;
-  }
-
-  .hero-subtitle {
-    font-size: 18px;
-  }
-
-  .btn-reservar {
-    padding: 14px 35px;
-    font-size: 15px;
-    width: auto;
-    max-width: 90%;
-  }
-
-  .icono-mouse svg {
-    width: 30px;
-    height: 30px;
-  }
+  50% { transform: translateY(10px); }
 }
 
 /* ========================================
@@ -373,6 +272,27 @@ body {
 .servicios {
   padding: 100px 20px;
   background: var(--color-dark);
+}
+
+.titulo-seccion {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.titulo-seccion h2 {
+  color: var(--color-white);
+  font-size: 56px;
+  font-weight: 400;
+  margin-bottom: 15px;
+  font-family: var(--font-serif);
+  letter-spacing: 1px;
+}
+
+.linea-dorada {
+  width: 80px;
+  height: 3px;
+  background: var(--color-gold);
+  margin: 0 auto;
 }
 
 .servicios-grid {
@@ -387,20 +307,20 @@ body {
   border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 35px 30px;
-  cursor: pointer;
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
-  min-height: 200px;
   text-decoration: none;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  cursor: pointer;
 }
 
 .servicio-card:hover {
   transform: translateY(-5px);
   border-color: var(--color-gold);
-  box-shadow: 0 8px 25px rgba(218, 165, 32, 0.4);
-  background: rgba(218, 165, 32, 0.05);
+  box-shadow: 0 8px 25px rgba(218, 165, 32, 0.2);
 }
 
 .servicio-header {
@@ -419,12 +339,9 @@ body {
   flex: 1;
 }
 
-/* EFECTO DE ILUMINACIÓN EN EL TÍTULO */
 .servicio-card:hover .servicio-nombre {
   color: var(--color-gold);
-  text-shadow: 0 0 20px rgba(218, 165, 32, 0.8),
-               0 0 30px rgba(218, 165, 32, 0.6),
-               0 0 40px rgba(218, 165, 32, 0.4);
+  text-shadow: 0 0 20px rgba(218, 165, 32, 0.6);
 }
 
 .servicio-precio {
@@ -441,9 +358,9 @@ body {
   line-height: 1.6;
   font-weight: 300;
   margin-bottom: 25px;
+  flex-grow: 1;
 }
 
-/* BOTÓN CON EFECTO DE ILUMINACIÓN */
 .btn-agendar {
   background: transparent;
   color: var(--color-gold);
@@ -454,21 +371,20 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: var(--font-sans);
   text-transform: uppercase;
   letter-spacing: 1px;
   width: 100%;
-  display: block;
-  text-align: center;
+  font-family: var(--font-sans);
+  margin-top: auto;
   text-decoration: none;
+  text-align: center;
+  display: block;
 }
 
 .servicio-card:hover .btn-agendar {
   background: var(--color-gold);
   color: var(--color-darker);
-  box-shadow: 0 0 25px rgba(218, 165, 32, 0.9),
-              0 0 40px rgba(218, 165, 32, 0.6),
-              0 0 60px rgba(218, 165, 32, 0.3);
+  box-shadow: 0 0 20px rgba(218, 165, 32, 0.7);
   transform: scale(1.02);
 }
 
@@ -500,62 +416,6 @@ body {
 }
 
 /* ========================================
-   RESPONSIVE SERVICIOS - EFECTOS TÁCTILES
-   ======================================== */
-@media (max-width: 1200px) {
-  .servicios-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .servicios {
-    padding: 60px 20px;
-  }
-
-  .servicios-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .servicio-card {
-    padding: 25px 20px;
-  }
-
-  .servicio-nombre {
-    font-size: 22px;
-  }
-
-  .servicio-precio {
-    font-size: 28px;
-  }
-
-  /* EFECTOS TÁCTILES PARA MÓVIL - Activados al tocar */
-  .servicio-card:active {
-    transform: translateY(-5px);
-    border-color: var(--color-gold);
-    box-shadow: 0 10px 30px rgba(218, 165, 32, 0.6);
-    background: rgba(218, 165, 32, 0.08);
-  }
-
-  .servicio-card:active .servicio-nombre {
-    color: var(--color-gold);
-    text-shadow: 0 0 25px rgba(218, 165, 32, 1),
-                 0 0 40px rgba(218, 165, 32, 0.8),
-                 0 0 60px rgba(218, 165, 32, 0.5);
-  }
-
-  .servicio-card:active .btn-agendar {
-    background: var(--color-gold);
-    color: var(--color-darker);
-    box-shadow: 0 0 30px rgba(218, 165, 32, 1),
-                0 0 50px rgba(218, 165, 32, 0.8),
-                0 0 70px rgba(218, 165, 32, 0.5);
-    transform: scale(1.02);
-  }
-}
-
-/* ========================================
    POR QUÉ ELEGIRNOS SECTION
    ======================================== */
 .por-que-elegirnos {
@@ -567,8 +427,6 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 40px;
-  max-width: 1400px;
-  margin: 0 auto;
 }
 
 .caracteristica-item {
@@ -577,7 +435,6 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Contenedor del icono con círculo */
 .icono-container {
   width: 100px;
   height: 100px;
@@ -599,20 +456,18 @@ body {
   transition: all 0.4s ease;
 }
 
-/* EFECTO DE ILUMINACIÓN EN HOVER */
 .caracteristica-item:hover .icono-container {
   background: var(--color-gold);
-  box-shadow: 0 0 35px rgba(218, 165, 32, 1),
-              0 0 60px rgba(218, 165, 32, 0.7),
-              0 0 90px rgba(218, 165, 32, 0.4);
-  transform: scale(1.15);
+  box-shadow: 0 0 30px rgba(218, 165, 32, 0.8),
+              0 0 50px rgba(218, 165, 32, 0.5),
+              0 0 70px rgba(218, 165, 32, 0.3);
+  transform: scale(1.1);
 }
 
 .caracteristica-item:hover .icono-container svg {
   color: var(--color-darker);
 }
 
-/* Título de la característica */
 .caracteristica-titulo {
   color: var(--color-white);
   font-size: 20px;
@@ -626,7 +481,6 @@ body {
   color: var(--color-gold);
 }
 
-/* Descripción */
 .caracteristica-descripcion {
   color: var(--color-text-light);
   font-size: 14px;
@@ -636,74 +490,6 @@ body {
   max-width: 280px;
   margin: 0 auto;
 }
-
-/* ========================================
-   RESPONSIVE POR QUÉ ELEGIRNOS - EFECTOS TÁCTILES
-   ======================================== */
-@media (max-width: 1200px) {
-  .caracteristicas-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 50px;
-  }
-}
-
-@media (max-width: 768px) {
-  .por-que-elegirnos {
-    padding: 60px 20px;
-  }
-
-  .caracteristicas-grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .icono-container {
-    width: 90px;
-    height: 90px;
-  }
-
-  .icono-container svg {
-    width: 40px;
-    height: 40px;
-  }
-
-  /* EFECTOS TÁCTILES PARA MÓVIL - Activados al tocar */
-  .caracteristica-item:active .icono-container {
-    background: var(--color-gold);
-    box-shadow: 0 0 40px rgba(218, 165, 32, 1),
-                0 0 70px rgba(218, 165, 32, 0.9),
-                0 0 100px rgba(218, 165, 32, 0.6);
-    transform: scale(1.2);
-  }
-
-  .caracteristica-item:active .icono-container svg {
-    color: var(--color-darker);
-  }
-
-  .caracteristica-item:active .caracteristica-titulo {
-    color: var(--color-gold);
-    text-shadow: 0 0 15px rgba(218, 165, 32, 0.8);
-  }
-}
-
-  /* EFECTOS TÁCTILES PARA MÓVIL - Activados al tocar */
-  .caracteristica-item:active .icono-container {
-    background: var(--color-gold);
-    box-shadow: 0 0 40px rgba(218, 165, 32, 1),
-                0 0 70px rgba(218, 165, 32, 0.9),
-                0 0 100px rgba(218, 165, 32, 0.6);
-    transform: scale(1.2);
-  }
-
-  .caracteristica-item:active .icono-container svg {
-    color: var(--color-darker);
-  }
-
-  .caracteristica-item:active .caracteristica-titulo {
-    color: var(--color-gold);
-    text-shadow: 0 0 15px rgba(218, 165, 32, 0.8);
-  }
-
 
 /* ========================================
    GALERÍA SECTION
