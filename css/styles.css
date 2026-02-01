@@ -375,27 +375,6 @@ body {
   background: var(--color-dark);
 }
 
-.titulo-seccion {
-  text-align: center;
-  margin-bottom: 60px;
-}
-
-.titulo-seccion h2 {
-  color: var(--color-white);
-  font-size: 56px;
-  font-weight: 400;
-  margin-bottom: 15px;
-  font-family: var(--font-serif);
-  letter-spacing: 1px;
-}
-
-.linea-dorada {
-  width: 80px;
-  height: 3px;
-  background: var(--color-gold);
-  margin: 0 auto;
-}
-
 .servicios-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -408,20 +387,20 @@ body {
   border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 35px 30px;
+  cursor: pointer;
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
+  min-height: 200px;
   text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  min-height: 280px;
-  cursor: pointer;
+  display: block;
 }
 
 .servicio-card:hover {
   transform: translateY(-5px);
   border-color: var(--color-gold);
-  box-shadow: 0 8px 25px rgba(218, 165, 32, 0.2);
+  box-shadow: 0 8px 25px rgba(218, 165, 32, 0.4);
+  background: rgba(218, 165, 32, 0.05);
 }
 
 .servicio-header {
@@ -440,9 +419,12 @@ body {
   flex: 1;
 }
 
+/* EFECTO DE ILUMINACIÓN EN EL TÍTULO */
 .servicio-card:hover .servicio-nombre {
   color: var(--color-gold);
-  text-shadow: 0 0 20px rgba(218, 165, 32, 0.6);
+  text-shadow: 0 0 20px rgba(218, 165, 32, 0.8),
+               0 0 30px rgba(218, 165, 32, 0.6),
+               0 0 40px rgba(218, 165, 32, 0.4);
 }
 
 .servicio-precio {
@@ -459,9 +441,9 @@ body {
   line-height: 1.6;
   font-weight: 300;
   margin-bottom: 25px;
-  flex-grow: 1;
 }
 
+/* BOTÓN CON EFECTO DE ILUMINACIÓN */
 .btn-agendar {
   background: transparent;
   color: var(--color-gold);
@@ -472,20 +454,21 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-family: var(--font-sans);
   text-transform: uppercase;
   letter-spacing: 1px;
   width: 100%;
-  font-family: var(--font-sans);
-  margin-top: auto;
-  text-decoration: none;
-  text-align: center;
   display: block;
+  text-align: center;
+  text-decoration: none;
 }
 
 .servicio-card:hover .btn-agendar {
   background: var(--color-gold);
   color: var(--color-darker);
-  box-shadow: 0 0 20px rgba(218, 165, 32, 0.7);
+  box-shadow: 0 0 25px rgba(218, 165, 32, 0.9),
+              0 0 40px rgba(218, 165, 32, 0.6),
+              0 0 60px rgba(218, 165, 32, 0.3);
   transform: scale(1.02);
 }
 
@@ -517,6 +500,62 @@ body {
 }
 
 /* ========================================
+   RESPONSIVE SERVICIOS - EFECTOS TÁCTILES
+   ======================================== */
+@media (max-width: 1200px) {
+  .servicios-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .servicios {
+    padding: 60px 20px;
+  }
+
+  .servicios-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .servicio-card {
+    padding: 25px 20px;
+  }
+
+  .servicio-nombre {
+    font-size: 22px;
+  }
+
+  .servicio-precio {
+    font-size: 28px;
+  }
+
+  /* EFECTOS TÁCTILES PARA MÓVIL - Activados al tocar */
+  .servicio-card:active {
+    transform: translateY(-5px);
+    border-color: var(--color-gold);
+    box-shadow: 0 10px 30px rgba(218, 165, 32, 0.6);
+    background: rgba(218, 165, 32, 0.08);
+  }
+
+  .servicio-card:active .servicio-nombre {
+    color: var(--color-gold);
+    text-shadow: 0 0 25px rgba(218, 165, 32, 1),
+                 0 0 40px rgba(218, 165, 32, 0.8),
+                 0 0 60px rgba(218, 165, 32, 0.5);
+  }
+
+  .servicio-card:active .btn-agendar {
+    background: var(--color-gold);
+    color: var(--color-darker);
+    box-shadow: 0 0 30px rgba(218, 165, 32, 1),
+                0 0 50px rgba(218, 165, 32, 0.8),
+                0 0 70px rgba(218, 165, 32, 0.5);
+    transform: scale(1.02);
+  }
+}
+
+/* ========================================
    POR QUÉ ELEGIRNOS SECTION
    ======================================== */
 .por-que-elegirnos {
@@ -528,6 +567,8 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .caracteristica-item {
@@ -536,6 +577,7 @@ body {
   transition: all 0.3s ease;
 }
 
+/* Contenedor del icono con círculo */
 .icono-container {
   width: 100px;
   height: 100px;
@@ -557,18 +599,20 @@ body {
   transition: all 0.4s ease;
 }
 
+/* EFECTO DE ILUMINACIÓN EN HOVER */
 .caracteristica-item:hover .icono-container {
   background: var(--color-gold);
-  box-shadow: 0 0 30px rgba(218, 165, 32, 0.8),
-              0 0 50px rgba(218, 165, 32, 0.5),
-              0 0 70px rgba(218, 165, 32, 0.3);
-  transform: scale(1.1);
+  box-shadow: 0 0 35px rgba(218, 165, 32, 1),
+              0 0 60px rgba(218, 165, 32, 0.7),
+              0 0 90px rgba(218, 165, 32, 0.4);
+  transform: scale(1.15);
 }
 
 .caracteristica-item:hover .icono-container svg {
   color: var(--color-darker);
 }
 
+/* Título de la característica */
 .caracteristica-titulo {
   color: var(--color-white);
   font-size: 20px;
@@ -582,6 +626,7 @@ body {
   color: var(--color-gold);
 }
 
+/* Descripción */
 .caracteristica-descripcion {
   color: var(--color-text-light);
   font-size: 14px;
@@ -590,6 +635,55 @@ body {
   font-weight: 300;
   max-width: 280px;
   margin: 0 auto;
+}
+
+/* ========================================
+   RESPONSIVE POR QUÉ ELEGIRNOS - EFECTOS TÁCTILES
+   ======================================== */
+@media (max-width: 1200px) {
+  .caracteristicas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .por-que-elegirnos {
+    padding: 60px 20px;
+  }
+
+  .caracteristicas-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .icono-container {
+    width: 90px;
+    height: 90px;
+  }
+
+  .icono-container svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* EFECTOS TÁCTILES PARA MÓVIL - Activados al tocar */
+  .caracteristica-item:active .icono-container {
+    background: var(--color-gold);
+    box-shadow: 0 0 40px rgba(218, 165, 32, 1),
+                0 0 70px rgba(218, 165, 32, 0.9),
+                0 0 100px rgba(218, 165, 32, 0.6);
+    transform: scale(1.2);
+  }
+
+  .caracteristica-item:active .icono-container svg {
+    color: var(--color-darker);
+  }
+
+  .caracteristica-item:active .caracteristica-titulo {
+    color: var(--color-gold);
+    text-shadow: 0 0 15px rgba(218, 165, 32, 0.8);
+  }
 }
 
 /* ========================================
