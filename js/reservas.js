@@ -7,7 +7,7 @@ const CONFIG = {
   
   // Nombres de los barberos
   barberos: {
-    barbero1: 'Carlos Rodríguez',
+    barbero1: 'Felipe Orozco',
     barbero2: 'Miguel Ángel',
     barbero3: 'Andrés López'
   }

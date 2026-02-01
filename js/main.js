@@ -116,15 +116,20 @@ if ('IntersectionObserver' in window) {
 }
 
 // ========================================
-// PARALLAX EFFECT para Hero
+// PARALLAX EFFECT para Hero (solo desktop)
 // ========================================
-window.addEventListener('scroll', () => {
-  const hero = document.querySelector('.hero');
-  if (hero) {
-    const scrolled = window.pageYOffset;
-    hero.style.backgroundPositionY = scrolled * 0.5 + 'px';
-  }
-});
+if (window.innerWidth > 768) {
+  window.addEventListener('scroll', () => {
+    const hero = document.querySelector('.hero');
+    if (hero) {
+      const scrolled = window.pageYOffset;
+      // Limitar el desplazamiento para evitar que se vea cortado
+      const maxOffset = 200; // Máximo desplazamiento en píxeles
+      const offset = Math.min(scrolled * 0.3, maxOffset);
+      hero.style.backgroundPositionY = offset + 'px';
+    }
+  });
+}
 
 // ========================================
 // Prevenir FOUC (Flash of Unstyled Content)

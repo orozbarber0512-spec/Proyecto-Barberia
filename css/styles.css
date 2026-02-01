@@ -154,14 +154,15 @@ body {
 .hero {
   position: relative;
   height: 100vh;
+  min-height: 600px;
+  background-image: url('../assets/images/oroz-barber.jpeg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Efecto parallax en desktop */
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  background-image: url('../assets/images/oroz-barber.jpeg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
   overflow: hidden;
 }
 
@@ -177,63 +178,90 @@ body {
     rgba(0, 0, 0, 0.5) 50%,
     rgba(0, 0, 0, 0.7) 100%
   );
+  z-index: 1;
 }
 
 .hero-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  text-align: center;
   padding: 20px;
+  animation: fadeInUp 1s ease-out;
+}
+
+/* Iconos animados */
+.icono-tijeras,
+.icono-mouse {
+  color: var(--color-gold);
+  display: inline-block;
 }
 
 .icono-tijeras {
-  color: var(--color-gold);
-  margin-bottom: 5px;
+  margin-bottom: 30px;
   animation: floatUp 3s ease-in-out infinite;
 }
 
 .icono-tijeras svg {
-  width: 60px;
-  height: 60px;
-  stroke: var(--color-gold);
+  width: 80px;
+  height: 80px;
+  stroke: currentColor;
   fill: none;
   stroke-width: 1.5;
 }
 
+.icono-mouse {
+  margin-top: 40px;
+  animation: floatDown 3s ease-in-out infinite;
+}
+
+.icono-mouse svg {
+  width: 40px;
+  height: 40px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+}
+
+/* Títulos del Hero */
 .hero-title {
-  font-size: 70px;
+  font-size: 80px;
   font-weight: 700;
   color: var(--color-white);
-  letter-spacing: 6px;
-  margin: 0;
+  letter-spacing: 8px;
+  margin-bottom: 20px;
   font-family: var(--font-elegant);
   text-transform: uppercase;
-  line-height: 1;
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  line-height: 1.2;
 }
 
 .hero-subtitle {
-  font-size: 24px;
+  font-size: 28px;
   color: var(--color-gold);
   font-style: italic;
-  margin: 10px 0 35px 0;
+  margin-bottom: 50px;
   font-family: var(--font-serif);
+  font-weight: 400;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
+/* Botón Reservar del Hero */
 .btn-reservar {
   background: var(--color-gold);
   color: var(--color-darker);
-  padding: 18px 55px;
-  font-size: 16px;
+  border: none;
+  padding: 18px 60px;
+  font-size: 18px;
   font-weight: 600;
   border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-serif);
   text-transform: uppercase;
   letter-spacing: 2px;
-  text-decoration: none;
   box-shadow: 0 5px 20px rgba(218, 165, 32, 0.3);
   display: inline-block;
-  transition: all 0.3s ease;
-  font-family: var(--font-elegant);
+  text-decoration: none;
 }
 
 .btn-reservar:hover {
@@ -242,28 +270,101 @@ body {
   box-shadow: 0 8px 30px rgba(218, 165, 32, 0.5);
 }
 
-.icono-mouse {
-  margin-top: 50px;
-  color: var(--color-gold);
-  animation: floatDown 3s ease-in-out infinite;
-}
-
-.icono-mouse svg {
-  width: 35px;
-  height: 35px;
-  stroke: var(--color-gold);
-  fill: none;
-  stroke-width: 1.5;
-}
-
+/* Animaciones */
 @keyframes floatUp {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-20px); }
 }
 
 @keyframes floatDown {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(10px); }
+  50% { transform: translateY(20px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   RESPONSIVE HERO
+   ======================================== */
+@media (max-width: 768px) {
+  .hero {
+    height: 100vh;
+    min-height: 100vh;
+    background-attachment: scroll; /* IMPORTANTE: Desactiva parallax en móvil */
+    background-position: center center;
+    background-size: cover;
+  }
+
+  .hero-content {
+    padding: 20px 15px;
+  }
+
+  .icono-tijeras svg {
+    width: 60px;
+    height: 60px;
+  }
+
+  .hero-title {
+    font-size: 48px;
+    letter-spacing: 4px;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+    margin-bottom: 40px;
+  }
+
+  .btn-reservar {
+    padding: 15px 40px;
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  .icono-mouse svg {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 100vh;
+  }
+
+  .icono-tijeras svg {
+    width: 50px;
+    height: 50px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+    letter-spacing: 2px;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .btn-reservar {
+    padding: 14px 35px;
+    font-size: 15px;
+    width: auto;
+    max-width: 90%;
+  }
+
+  .icono-mouse svg {
+    width: 30px;
+    height: 30px;
+  }
 }
 
 /* ========================================
