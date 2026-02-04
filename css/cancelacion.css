@@ -1,0 +1,288 @@
+/* ========================================
+   1. VARIABLES INTELIGENTES (DARK/LIGHT)
+   ======================================== */
+:root {
+  /* Valores por defecto: MODO OSCURO */
+  --color-bg-container: #0a0a0a;
+  --color-bg-card: rgba(26, 26, 26, 0.95);
+  --color-text-main: #ffffff;
+  --color-text-secondary: #999999;
+  --color-input-bg: rgba(255, 255, 255, 0.05);
+  --color-border: #333333;
+  --color-gold: #DAA520;
+  --color-danger: #eb4034;
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
+}
+
+/* Ajustes automáticos para MODO CLARO */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bg-container: #f4f4f4;
+    --color-bg-card: #ffffff;
+    --color-text-main: #1a1a1a;
+    --color-text-secondary: #555555;
+    --color-input-bg: #f9f9f9;
+    --color-border: #dddddd;
+  }
+}
+
+/* ========================================
+   2. RESET Y CONFIGURACIÓN BASE
+   ======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  background: var(--color-bg-container);
+  color: var(--color-text-main);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ========================================
+   3. CONTENEDOR PRINCIPAL Y TARJETA
+   ======================================== */
+.cancelacion-container {
+  min-height: 100vh;
+  /* Gradiente radial que se adapta al modo de color */
+  background: radial-gradient(circle at center, var(--color-bg-card) 0%, var(--color-bg-container) 100%);
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cancelacion-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 550px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.cancelacion-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.cancelacion-header i {
+  font-size: 50px;
+  color: var(--color-danger);
+  margin-bottom: 15px;
+}
+
+.cancelacion-header h1 {
+  color: var(--color-text-main);
+  font-size: 28px;
+  font-family: var(--font-serif);
+  margin-bottom: 10px;
+}
+
+.cancelacion-header p {
+  color: var(--color-text-secondary);
+}
+
+/* ========================================
+   4. FORMULARIO E INPUTS
+   ======================================== */
+.form-group-cancel {
+  margin-bottom: 20px;
+}
+
+.form-group-cancel label {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.form-group-cancel input {
+  width: 100%;
+  background: var(--color-input-bg) !important;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 15px;
+  color: var(--color-text-main) !important;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.form-group-cancel input:focus {
+  outline: none;
+  border-color: var(--color-danger);
+  background: var(--color-bg-card) !important;
+}
+
+/* Caja de advertencia */
+.info-box {
+  background: rgba(235, 64, 52, 0.08);
+  border-left: 3px solid var(--color-danger);
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 30px;
+}
+
+.info-box p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-main);
+}
+
+/* ========================================
+   5. BOTONES (ESTILIZADOS Y ESPACIADOS)
+   ======================================== */
+.botones-cancelacion {
+  display: flex;
+  gap: 15px; /* Espacio elegante entre botones */
+  margin-top: 20px;
+}
+
+.btn-cancelacion {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+/* Botón Volver */
+.btn-volver-cancel {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.btn-volver-cancel:hover {
+  background: var(--color-input-bg);
+  color: var(--color-text-main);
+  border-color: var(--color-text-main);
+}
+
+/* Botón Acción Principal (Cancelar) */
+.btn-cancelar-cita {
+  background: var(--color-danger);
+  color: #ffffff;
+}
+
+.btn-cancelar-cita:hover:not(:disabled) {
+  background: #ff5246;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(235, 64, 52, 0.3);
+}
+
+.btn-cancelar-cita:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   6. MENSAJES DE RESULTADO
+   ======================================== */
+.mensaje-resultado {
+    display: none !important; /* Forzamos que se oculte a menos que tenga la clase .visible */
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* Clase que activa el JS */
+.mensaje-resultado.visible {
+    display: block !important; /* Solo se muestra cuando JS lo decide */
+}
+
+.mensaje-resultado i {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+#mensajeExito i { color: #4caf50; }
+#mensajeError i { color: var(--color-danger); }
+
+.mensaje-resultado h2 {
+  font-family: var(--font-serif);
+  margin-bottom: 15px;
+  color: var(--color-text-main);
+}
+
+.mensaje-resultado p {
+  color: var(--color-text-secondary);
+  margin-bottom: 25px;
+}
+
+/* Botones dentro de los mensajes */
+.btn-nueva-reserva {
+  background: var(--color-gold);
+  color: #000;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.btn-nueva-reserva:hover {
+  background: #ffcc33;
+  transform: translateY(-2px);
+}
+
+.btn-inicio {
+  background: transparent;
+  color: var(--color-text-main);
+  border: 1px solid var(--color-border);
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+/* ========================================
+   7. RESPONSIVE (MÓVIL)
+   ======================================== */
+@media (max-width: 768px) {
+  .cancelacion-card {
+    padding: 30px 20px;
+    margin: 10px;
+  }
+
+  .botones-cancelacion {
+    flex-direction: column-reverse; /* Volver abajo, Cancelar arriba */
+    gap: 12px;
+  }
+
+  .btn-cancelacion {
+    width: 100%;
+    padding: 15px; /* Más fácil de tocar con el dedo */
+  }
+}

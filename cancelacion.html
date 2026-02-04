@@ -15,268 +15,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- CSS -->
-  <link rel="stylesheet" href="css/reservas.css">
+  <link rel="stylesheet" href="css/cancelacion.css">
   
-  <style>
-    .cancelacion-container {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-      padding: 40px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .cancelacion-card {
-      background: rgba(26, 26, 26, 0.95);
-      border: 1px solid #333;
-      border-radius: 16px;
-      padding: 40px;
-      max-width: 600px;
-      width: 100%;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    }
-
-    .cancelacion-header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .cancelacion-header i {
-      font-size: 60px;
-      color: #eb4034;
-      margin-bottom: 20px;
-    }
-
-    .cancelacion-header h1 {
-      color: #ffffff;
-      font-size: 32px;
-      font-family: var(--font-serif);
-      margin-bottom: 10px;
-    }
-
-    .cancelacion-header p {
-      color: #999;
-      font-size: 16px;
-    }
-
-    .form-cancelacion {
-      margin-top: 30px;
-    }
-
-    .form-group-cancel {
-      margin-bottom: 25px;
-    }
-
-    .form-group-cancel label {
-      display: block;
-      color: #ffffff;
-      font-size: 14px;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .form-group-cancel input {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.05) !important;
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
-      padding: 14px 15px;
-      color: var(--color-white) !important;
-      font-size: 15px;
-      font-family: var(--font-sans);
-      transition: all 0.3s ease;
-      box-sizing: border-box;
-    }
-
-    .form-group-cancel input:focus {
-      outline: none;
-      border-color: #eb4034;
-      background: rgba(235, 64, 52, 0.05) !important;
-    }
-
-    .info-box {
-      background: rgba(235, 64, 52, 0.1);
-      border: 1px solid rgba(235, 64, 52, 0.3);
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 30px;
-    }
-
-    .info-box p {
-      color: #f87171;
-      font-size: 14px;
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    .info-box strong {
-      color: #eb4034;
-    }
-
-    .botones-cancelacion {
-      display: flex;
-      gap: 15px;
-      margin-top: 30px;
-    }
-
-    .btn-cancelacion {
-      flex: 1;
-      padding: 16px 30px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: none;
-      font-family: var(--font-sans);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-
-    .btn-volver-cancel {
-      background: transparent;
-      color: var(--color-text-light);
-      border: 2px solid var(--color-border);
-    }
-
-    .btn-volver-cancel:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--color-text-light);
-      color: var(--color-white);
-    }
-
-    .btn-cancelar-cita {
-      background: #eb4034;
-      color: white;
-      border: 2px solid #eb4034;
-    }
-
-    .btn-cancelar-cita:hover {
-      background: #d32f2f;
-      border-color: #d32f2f;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(235, 64, 52, 0.4);
-    }
-
-    .btn-cancelar-cita:disabled {
-      background: #555;
-      border-color: #555;
-      color: #999;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .mensaje-resultado {
-      display: none;
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .mensaje-resultado.exito {
-      display: block;
-    }
-
-    .mensaje-resultado i {
-      font-size: 80px;
-      margin-bottom: 20px;
-    }
-
-    .mensaje-resultado.exito i {
-      color: #4caf50;
-    }
-
-    .mensaje-resultado.error i {
-      color: #eb4034;
-    }
-
-    .mensaje-resultado h2 {
-      color: #ffffff;
-      font-size: 28px;
-      margin-bottom: 15px;
-      font-family: var(--font-serif);
-    }
-
-    .mensaje-resultado p {
-      color: #999;
-      font-size: 16px;
-      line-height: 1.6;
-      margin-bottom: 30px;
-    }
-
-    .btn-nueva-reserva {
-      background: var(--color-gold);
-      color: var(--color-darker);
-      border: 2px solid var(--color-gold);
-      padding: 16px 40px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: var(--font-sans);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      margin-right: 15px;
-    }
-
-    .btn-nueva-reserva:hover {
-      background: #FFD700;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(218, 165, 32, 0.4);
-    }
-
-    .btn-inicio {
-      background: transparent;
-      color: var(--color-white);
-      border: 2px solid var(--color-border);
-      padding: 16px 40px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: var(--font-sans);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-
-    .btn-inicio:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--color-white);
-    }
-
-    @media (max-width: 768px) {
-      .cancelacion-card {
-        padding: 30px 20px;
-      }
-
-      .cancelacion-header h1 {
-        font-size: 26px;
-      }
-
-      .botones-cancelacion {
-        flex-direction: column;
-      }
-
-      .mensaje-resultado h2 {
-        font-size: 24px;
-      }
-    }
-  </style>
 </head>
 <body>
 
@@ -287,7 +27,7 @@
       <div id="formularioCancelacion">
         <div class="cancelacion-header">
           <i class="fas fa-calendar-times"></i>
-          <h1>Cancelar o Re-agendar Cita</h1>
+          <h1>Cancelar Cita</h1>
           <p>Ingresa el ID de tu cita para continuar</p>
         </div>
 
@@ -325,7 +65,7 @@
       </div>
 
       <!-- Mensaje de Éxito -->
-      <div id="mensajeExito" class="mensaje-resultado">
+      <div id="mensajeExito" class="mensaje-resultado" style="display: none;">
         <i class="fas fa-check-circle"></i>
         <h2>¡Cita Cancelada Exitosamente!</h2>
         <p>Tu cita ha sido cancelada. Esperamos verte pronto.</p>
@@ -342,7 +82,7 @@
       </div>
 
       <!-- Mensaje de Error -->
-      <div id="mensajeError" class="mensaje-resultado error">
+      <div id="mensajeError" class="mensaje-resultado error" style="display: none;">
         <i class="fas fa-exclamation-circle"></i>
         <h2>No se pudo cancelar</h2>
         <p id="textoError">Ha ocurrido un error. Por favor intenta nuevamente.</p>
@@ -361,90 +101,7 @@
     </div>
   </div>
 
-  <script>
-    // Configuración
-    const CONFIG = {
-      webAppURL: 'https://script.google.com/macros/s/AKfycbwJl-c5iMGW3ZqNY0bZR3vzTfD7gdP7nObIXT07Kd-YdCOvqj5-GYf2ohByLHq8oZOM/exec'
-    };
-
-    const form = document.getElementById('formCancelar');
-    const formulario = document.getElementById('formularioCancelacion');
-    const mensajeExito = document.getElementById('mensajeExito');
-    const mensajeError = document.getElementById('mensajeError');
-    const textoError = document.getElementById('textoError');
-
-    // Obtener ID de la URL si viene del email
-    const urlParams = new URLSearchParams(window.location.search);
-    const idCitaURL = urlParams.get('id');
-    if (idCitaURL) {
-      document.getElementById('idCita').value = decodeURIComponent(idCitaURL);
-    }
-
-    // Manejar envío del formulario
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const idCita = document.getElementById('idCita').value.trim();
-
-      if (!idCita) {
-        alert('Por favor ingresa el ID de tu cita');
-        return;
-      }
-
-      // Deshabilitar botón
-      const btnCancelar = document.querySelector('.btn-cancelar-cita');
-      const textoOriginal = btnCancelar.innerHTML;
-      btnCancelar.disabled = true;
-      btnCancelar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-
-      try {
-        const response = await fetch(CONFIG.webAppURL, {
-          redirect: 'follow',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-          body: JSON.stringify({
-            action: 'cancelar',
-            idCita: idCita
-          })
-        });
-
-        const resultado = await response.json();
-
-        if (resultado.exito) {
-          // Mostrar mensaje de éxito
-          formulario.style.display = 'none';
-          mensajeExito.classList.add('exito');
-          mensajeExito.style.display = 'block';
-        } else {
-          // Mostrar mensaje de error
-          formulario.style.display = 'none';
-          textoError.textContent = resultado.mensaje || 'No se pudo cancelar la cita';
-          mensajeError.classList.add('error');
-          mensajeError.style.display = 'block';
-        }
-
-      } catch (error) {
-        console.error('Error:', error);
-        formulario.style.display = 'none';
-        textoError.textContent = 'Error de conexión. Por favor intenta nuevamente.';
-        mensajeError.classList.add('error');
-        mensajeError.style.display = 'block';
-      } finally {
-        btnCancelar.disabled = false;
-        btnCancelar.innerHTML = textoOriginal;
-      }
-    });
-
-    function volverFormulario() {
-      formulario.style.display = 'block';
-      mensajeError.style.display = 'none';
-      mensajeExito.style.display = 'none';
-    }
-
-    console.log('%c✂️ Sistema de Cancelación - Oroz Barber', 'font-size: 16px; color: #eb4034; font-weight: bold;');
-  </script>
+  <script src="js/cancelacion.js"></script>
 
 </body>
 </html>
