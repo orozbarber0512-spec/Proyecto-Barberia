@@ -230,7 +230,6 @@ form.addEventListener('submit', async (e) => {
     fecha: document.getElementById('fecha').value,
     hora: document.getElementById('hora').value,
     servicio: document.getElementById('servicio').value,
-    comentarios: document.getElementById('comentarios').value
   };
   
   console.log('📊 Datos del formulario:', datos);
