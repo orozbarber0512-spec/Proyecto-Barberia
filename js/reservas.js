@@ -3,7 +3,7 @@
 // ======================================== 
 const CONFIG = {
   // URL de tu Web App de Apps Script
-  webAppURL: 'https://script.google.com/macros/s/AKfycbwJl-c5iMGW3ZqNY0bZR3vzTfD7gdP7nObIXT07Kd-YdCOvqj5-GYf2ohByLHq8oZOM/exec',
+  webAppURL: 'https://script.google.com/macros/s/AKfycby2vu-pCmAskLsGqrr1RId3Gdmy7rtU5HRD3GzSAwTzV4OQsTsq_Vx3Npus8SR5frS6jw/exec',
   
   barberos: {
     barbero1: 'Felipe Orozco',
@@ -227,23 +227,59 @@ form.addEventListener('submit', async (e) => {
       body: JSON.stringify(datos)
     });
     
-    const resultado = await response.json();
+    // VERIFICAR SI LA RESPUESTA ES VÁLIDA
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
     
+    const textoRespuesta = await response.text();
+    console.log('Respuesta del servidor:', textoRespuesta);
+    
+    // Intentar parsear como JSON
+    let resultado;
+    try {
+      resultado = JSON.parse(textoRespuesta);
+    } catch (parseError) {
+      console.error('Error al parsear respuesta:', parseError);
+      console.log('Respuesta original:', textoRespuesta);
+      
+      // Si no se puede parsear pero la petición llegó, asumir éxito
+      if (textoRespuesta.includes('exito') || response.status === 200) {
+        mostrarExito();
+        return;
+      } else {
+        throw new Error('Respuesta del servidor no válida');
+      }
+    }
+    
+    // Procesar resultado parseado
     if (resultado.exito) {
-      // Mostrar mensaje de éxito
       mostrarExito();
     } else {
-      // Mostrar mensaje de error
-      alert('❌ ' + resultado.mensaje);
+      alert('❌ ' + (resultado.mensaje || 'Error desconocido'));
       btnConfirmar.disabled = false;
       btnConfirmar.innerHTML = textoOriginal;
     }
     
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error completo:', error);
     
-    // Asumir que funcionó (por el modo no-cors)
-    mostrarExito();
+    // Intentar mostrar un mensaje más específico
+    let mensajeError = 'Error de conexión. ';
+    
+    if (error.message.includes('HTTP')) {
+      mensajeError += 'Problema con el servidor.';
+    } else if (error.message.includes('Failed to fetch')) {
+      mensajeError += 'Verifica tu conexión a internet.';
+    } else {
+      mensajeError += error.message;
+    }
+    
+    // Mostrar error al usuario
+    alert('⚠️ ' + mensajeError + '\n\nIntenta nuevamente o contacta con la barbería.');
+    
+    btnConfirmar.disabled = false;
+    btnConfirmar.innerHTML = textoOriginal;
   }
 });
 
@@ -256,6 +292,8 @@ function mostrarExito() {
   
   // Scroll al inicio del modal
   document.querySelector('.modal-content').scrollTop = 0;
+  
+  console.log('✅ Mensaje de éxito mostrado correctamente');
   
   // Restaurar botón después de 3 segundos
   setTimeout(() => {
