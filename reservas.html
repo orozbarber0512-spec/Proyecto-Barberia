@@ -33,33 +33,30 @@
     </div>
   </header>
 
-
   <!-- Información adicional -->
-      <div class="info-reservas">
-        <div class="info-card-reserva">
-          <i class="fas fa-clock"></i>
-          <h4>Horario de atención</h4>
-          <p>Lunes - Jueves: 8:00 AM - 12:00 PM | 2:00 PM - 8:00 PM</p>
-          <p>Viernes - Sábado: 8:00 AM - 12:00 PM | 2:00 PM - 10:00 PM</p>
-          <p class="nota">Domingos cerrado</p>
-        </div>
-        
-        <div class="info-card-reserva">
-          <i class="fas fa-info-circle"></i>
-          <h4>Importante</h4>
-          <p>Debes agendar con mínimo <strong>3 horas</strong> de anticipación</p>
-          <p class="nota">Cancelaciones hasta 1 hora antes</p>
-        </div>
-        
-        <div class="info-card-reserva">
-          <i class="fas fa-envelope"></i>
-          <h4>Confirmación</h4>
-          <p>Recibirás un correo de confirmación</p>
-          <p class="nota">Revisa tu bandeja de entrada</p>
-        </div>
-      </div>
-
+  <div class="info-reservas">
+    <div class="info-card-reserva">
+      <i class="fas fa-clock"></i>
+      <h4>Horario de atención</h4>
+      <p>Lunes - Jueves: 8:00 AM - 12:00 PM | 2:00 PM - 8:00 PM</p>
+      <p>Viernes - Sábado: 8:00 AM - 12:00 PM | 2:00 PM - 10:00 PM</p>
+      <p class="nota">Domingos cerrado</p>
     </div>
+    
+    <div class="info-card-reserva">
+      <i class="fas fa-info-circle"></i>
+      <h4>Importante</h4>
+      <p>Debes agendar con mínimo <strong>3 horas</strong> de anticipación</p>
+      <p class="nota">Cancelaciones hasta 1 hora antes</p>
+    </div>
+    
+    <div class="info-card-reserva">
+      <i class="fas fa-envelope"></i>
+      <h4>Confirmación</h4>
+      <p>Recibirás un correo de confirmación</p>
+      <p class="nota">Revisa tu bandeja de entrada</p>
+    </div>
+  </div>
 
   <!-- Sección de Barberos -->
   <section class="barberos-section">
@@ -70,14 +67,14 @@
         <!-- Barbero 1 -->
         <div class="barbero-card" data-barbero="barbero1">
           <div class="barbero-imagen">
-            <img src="assets/images/barbero1.jpg" alt="Carlos Rodríguez">
+            <img src="assets/images/barbero1.jpg" alt="Felipe Orozco">
             <div class="barbero-overlay">
               <i class="fas fa-calendar-check"></i>
               <p>Click para reservar</p>
             </div>
           </div>
           <div class="barbero-info">
-            <h3 class="barbero-nombre">Felipe orozco</h3>
+            <h3 class="barbero-nombre">Felipe Orozco</h3>
             <p class="barbero-titulo">Barbero Senior</p>
             <div class="barbero-stats">
               <div class="stat-item">
@@ -95,7 +92,7 @@
         <!-- Barbero 2 -->
         <div class="barbero-card" data-barbero="barbero2">
           <div class="barbero-imagen">
-            <img src="assets/images/barbero1.jpg" alt="Miguel Ángel">
+            <img src="assets/images/barbero1.jpg" alt="Tomas Orozco">
             <div class="barbero-overlay">
               <i class="fas fa-calendar-check"></i>
               <p>Click para reservar</p>
@@ -120,7 +117,7 @@
         <!-- Barbero 3 -->
         <div class="barbero-card" data-barbero="barbero3">
           <div class="barbero-imagen">
-            <img src="assets/images/barbero1.jpg" alt="Andrés López">
+            <img src="assets/images/barbero1.jpg" alt="Sergio Jiménez">
             <div class="barbero-overlay">
               <i class="fas fa-calendar-check"></i>
               <p>Click para reservar</p>
@@ -143,7 +140,6 @@
         </div>
 
       </div>
-
     </div>
   </section>
 
@@ -205,20 +201,22 @@
               </div>
             </div>
 
-          <!-- CONTENEDOR DE HORAS DISPONIBLES -->
-          <div class="form-row">
-            <div class="form-group full-width">
-              <label>Hora Disponible *</label>
-              <div id="horasDisponibles" class="horas-disponibles">
-                <div class="loading-horas">
-                  <p>Selecciona un servicio y una fecha para ver las horas disponibles</p>
+            <!-- CONTENEDOR DE HORAS DISPONIBLES -->
+            <div class="form-row">
+              <div class="form-group full-width">
+                <label>Hora Disponible *</label>
+                <div id="horasDisponibles" class="horas-disponibles">
+                  <div class="loading-horas">
+                    <p>Selecciona un servicio y una fecha para ver las horas disponibles</p>
+                  </div>
                 </div>
+
+                <!-- Campo oculto para guardar la hora seleccionada -->
+                <input type="hidden" id="hora" name="hora" required>
+              </div>
             </div>
 
-          <!-- Campo oculto para guardar la hora seleccionada -->
-          <input type="hidden" id="hora" name="hora" required>
-        </div>
-      </div>
+          </div>
 
           <!-- Botones -->
           <div class="form-buttons">
@@ -231,31 +229,29 @@
         </form>
       </div>
 
-      <!-- Mensaje de éxito (FUERA del contenedor del formulario) -->
+      <!-- Mensaje de éxito -->
       <div id="mensajeExito" class="mensaje-exito" style="display: none;">
-        <div id="mensajeExito" class="mensaje-exito">
         <i class="fas fa-check-circle"></i>
         <h3>¡Reserva Confirmada!</h3>
         <p>Te hemos enviado un mensaje de confirmación por correo electrónico</p>
         <button class="btn-cerrar-exito" onclick="cerrarModal()">Cerrar</button>
-        </div>
       </div>
+
     </div>
   </div>
-
-
-  </section>
 
   <!-- JavaScript -->
   <script src="js/reservas.js"></script>
 
-<footer class="footer-simple">
-  <div class="footer-bottom">
-    <p>&copy; 2026 Oroz Barber. Todos los derechos reservados.</p>
-    <p class="footer-developer">
-      Desarrollado por <a href="https://www.linkedin.com/in/juan-duquec" target="_blank" rel="noopener">Juan Jose Duque Castro</a>
-    </p>
-  </div>
-</footer>
+  <!-- Footer -->
+  <footer class="footer-simple">
+    <div class="footer-bottom">
+      <p>&copy; 2026 Oroz Barber. Todos los derechos reservados.</p>
+      <p class="footer-developer">
+        Desarrollado por <a href="https://www.linkedin.com/in/juan-duquec" target="_blank" rel="noopener">Juan Jose Duque Castro</a>
+      </p>
+    </div>
+  </footer>
+
 </body>
 </html>
