@@ -407,6 +407,9 @@ function mostrarExito() {
   contenedorFormulario.style.display = 'none';
   console.log('  ✓ Contenedor del formulario ocultado');
   
+  // Forzar reflow del navegador
+  void mensajeExito.offsetHeight;
+
   // MOSTRAR MENSAJE DE ÉXITO
   mensajeExito.style.display = 'block';
   console.log('  ✓ Mensaje de éxito mostrado');
@@ -416,6 +419,10 @@ function mostrarExito() {
   console.log('    contenedorFormulario.display:', window.getComputedStyle(contenedorFormulario).display);
   console.log('    mensajeExito.display:', window.getComputedStyle(mensajeExito).display);
   
+  //Asegurar que el modal siga visible
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+
   // Scroll al inicio del modal
   const modalContent = document.querySelector('.modal-content');
   if (modalContent) {

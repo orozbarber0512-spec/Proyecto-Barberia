@@ -244,14 +244,9 @@ body {
 .modal {
   display: none;
   position: fixed;
+  inset: 0;
   z-index: 9999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
   background-color: rgba(0, 0, 0, 0.9);
-  animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -778,10 +773,13 @@ body {
 
 #mensajeExito {
   display: none;
+  flex: 1;
 }
 
 .modal-content {
-  overflow-y: auto;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ========================================
