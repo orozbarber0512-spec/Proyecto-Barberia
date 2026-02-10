@@ -773,7 +773,17 @@ body {
 
 #mensajeExito {
   display: none;
-  flex: 1;
+  min-height: 260px;
+  padding: 40px 30px;
+}
+
+#mensajeExito i,
+#mensajeExito h3,
+#mensajeExito p,
+#mensajeExito button {
+  display: block;
+  visibility: visible;
+  opacity: 1;
 }
 
 .modal-content {
