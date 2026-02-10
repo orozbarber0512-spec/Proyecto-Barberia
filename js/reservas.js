@@ -1,10 +1,10 @@
 // ========================================
-// OROZ BARBER - SISTEMA DE RESERVAS v2.0
-// Con debugging mejorado y logging detallado
+// OROZ BARBER - SISTEMA DE RESERVAS v2.1
+// CORREGIDO: Ahora oculta el contenedor completo del formulario
 // ========================================
 
 const CONFIG = {
-  webAppURL: 'https://script.google.com/macros/s/AKfycby2vu-pCmAskLsGqrr1RId3Gdmy7rtU5HRD3GzSAwTzV4OQsTsq_Vx3Npus8SR5frS6jw/exec',
+  webAppURL: 'https://script.google.com/macros/s/AKfycbwJl-c5iMGW3ZqNY0bZR3vzTfD7gdP7nObIXT07Kd-YdCOvqj5-GYf2ohByLHq8oZOM/exec',
   
   barberos: {
     barbero1: 'Felipe Orozco',
@@ -16,7 +16,7 @@ const CONFIG = {
 // ========================================
 // VARIABLES GLOBALES
 // ========================================
-let modal, form, mensajeExito;
+let modal, form, mensajeExito, contenedorFormulario;
 let barberoActual = '';
 let servicioActual = '';
 let fechaActual = '';
@@ -25,20 +25,22 @@ let fechaActual = '';
 // INICIALIZACIÓN
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('%c💈 Sistema de Reservas - Oroz Barber v2.0', 'font-size: 16px; color: #DAA520; font-weight: bold;');
+  console.log('%c💈 Sistema de Reservas - Oroz Barber v2.1', 'font-size: 16px; color: #DAA520; font-weight: bold;');
   
   // Inicializar referencias del DOM
   modal = document.getElementById('reservaModal');
   form = document.getElementById('reservaForm');
   mensajeExito = document.getElementById('mensajeExito');
+  contenedorFormulario = document.getElementById('contenedorFormulario');
   
   // Verificar que los elementos existen
   console.log('🔍 Verificando elementos del DOM:');
   console.log('Modal:', modal ? '✅' : '❌');
   console.log('Formulario:', form ? '✅' : '❌');
   console.log('Mensaje de éxito:', mensajeExito ? '✅' : '❌');
+  console.log('Contenedor formulario:', contenedorFormulario ? '✅' : '❌');
   
-  if (!modal || !form || !mensajeExito) {
+  if (!modal || !form || !mensajeExito || !contenedorFormulario) {
     console.error('❌ ERROR: Faltan elementos del DOM. Revisa el HTML.');
     return;
   }
@@ -139,10 +141,12 @@ function abrirModal(barbero) {
   modal.style.display = 'block';
   document.body.style.overflow = 'hidden';
   
+  // Mostrar formulario y ocultar mensaje
+  contenedorFormulario.style.display = 'block';
+  mensajeExito.style.display = 'none';
+  
   // Resetear formulario
   form.reset();
-  form.style.display = 'block';
-  mensajeExito.style.display = 'none';
   
   // Resetear variables
   servicioActual = '';
@@ -164,7 +168,7 @@ function cerrarModal() {
   document.body.style.overflow = 'auto';
   form.reset();
   mensajeExito.style.display = 'none';
-  form.style.display = 'block';
+  contenedorFormulario.style.display = 'block';
   servicioActual = '';
   fechaActual = '';
 }
@@ -256,12 +260,6 @@ function seleccionarHora(hora, btn) {
   document.getElementById('hora').value = hora;
   
   console.log('🕐 Hora seleccionada:', hora);
-  
-  // Habilitar botón de confirmar
-  const btnConfirmar = document.querySelector('.btn-confirmar');
-  if (btnConfirmar) {
-    btnConfirmar.disabled = false;
-  }
 }
 
 // ========================================
@@ -387,27 +385,29 @@ function mostrarExito() {
   console.log('🎉 Mostrando mensaje de éxito...');
   
   // Verificar que los elementos existen
-  if (!form || !mensajeExito) {
+  if (!contenedorFormulario || !mensajeExito) {
     console.error('❌ ERROR: Elementos no encontrados');
-    console.log('Form:', form);
+    console.log('contenedorFormulario:', contenedorFormulario);
     console.log('mensajeExito:', mensajeExito);
     return;
   }
   
-  console.log('  Estado actual del formulario - display:', form.style.display);
-  console.log('  Estado actual del mensaje - display:', mensajeExito.style.display);
+  console.log('  Estado actual:');
+  console.log('    contenedorFormulario.display:', window.getComputedStyle(contenedorFormulario).display);
+  console.log('    mensajeExito.display:', window.getComputedStyle(mensajeExito).display);
   
-  // Ocultar formulario
-  form.style.display = 'none';
-  console.log('  ✓ Formulario ocultado');
+  // OCULTAR TODO EL CONTENEDOR DEL FORMULARIO (incluye header)
+  contenedorFormulario.style.display = 'none';
+  console.log('  ✓ Contenedor del formulario ocultado');
   
-  // Mostrar mensaje de éxito
+  // MOSTRAR MENSAJE DE ÉXITO
   mensajeExito.style.display = 'block';
   console.log('  ✓ Mensaje de éxito mostrado');
   
   // Verificar cambios
-  console.log('  Nuevo estado del formulario - display:', window.getComputedStyle(form).display);
-  console.log('  Nuevo estado del mensaje - display:', window.getComputedStyle(mensajeExito).display);
+  console.log('  Nuevo estado:');
+  console.log('    contenedorFormulario.display:', window.getComputedStyle(contenedorFormulario).display);
+  console.log('    mensajeExito.display:', window.getComputedStyle(mensajeExito).display);
   
   // Scroll al inicio del modal
   const modalContent = document.querySelector('.modal-content');

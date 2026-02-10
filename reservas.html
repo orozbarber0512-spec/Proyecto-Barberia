@@ -152,83 +152,86 @@
     <div class="modal-content">
       <button class="modal-close">&times;</button>
       
-      <div class="modal-header">
-        <h2>Reserva con <span id="barberoNombre"></span></h2>
-        <p>Completa el formulario para confirmar tu cita</p>
-      </div>
+      <!-- CONTENEDOR DEL FORMULARIO (se oculta completo) -->
+      <div id="contenedorFormulario">
+        <div class="modal-header">
+          <h2>Reserva con <span id="barberoNombre"></span></h2>
+          <p>Completa el formulario para confirmar tu cita</p>
+        </div>
 
-      <form id="reservaForm" class="reserva-form">
-        
-        <!-- Campo oculto para el barbero -->
-        <input type="hidden" id="barberoSeleccionado" name="barbero">
-
-        <!-- Información Personal -->
-        <div class="form-section">
-          <h3><i class="fas fa-user"></i> Información Personal</h3>
+        <form id="reservaForm" class="reserva-form">
           
-          <div class="form-row">
-            <div class="form-group full-width">
-              <label for="nombre">Nombre Completo *</label>
-              <input type="text" id="nombre" name="nombre" required>
-            </div>
-          </div>
+          <!-- Campo oculto para el barbero -->
+          <input type="hidden" id="barberoSeleccionado" name="barbero">
 
-          <div class="form-row">
-            <div class="form-group full-width">
-              <label for="email">Email *</label>
-              <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
-            </div>
-          </div>
-        </div>
-
-        <!-- Detalles de la Cita -->
-        <div class="form-section">
-          <h3><i class="fas fa-calendar-alt"></i> Detalles de la Cita</h3>
-  
-          <div class="form-row">
-            <div class="form-group">
-              <label for="servicio">Servicio *</label>
-              <select id="servicio" name="servicio" required>
-                <option value="">Selecciona un servicio</option>
-                <option value="Corte sencillo 💇🏻‍♂️ - $22.000">Corte sencillo 💇🏻‍♂️ - $22.000</option>
-                <option value="Limpieza Facial 💆🏻 - $25.000">Limpieza Facial 💆🏻 - $25.000</option>
-                <option value="Corte premium ⭐️ - $40.000">Corte premium ⭐️ - $40.000</option>
-                <option value="Corte con barba 🧔🏻‍♂️ - $25.000">Corte con barba 🧔🏻‍♂️ - $25.000</option>
-                <option value="Barba 🧔🏻‍♂️ - $7.000">Barba 🧔🏻‍♂️ - $7.000</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="fecha">Fecha *</label>
-              <input type="date" id="fecha" name="fecha" required>
-            </div>
-          </div>
-
-        <!-- CONTENEDOR DE HORAS DISPONIBLES -->
-        <div class="form-row">
-          <div class="form-group full-width">
-            <label>Hora Disponible *</label>
-            <div id="horasDisponibles" class="horas-disponibles">
-              <div class="loading-horas">
-                <p>Selecciona un servicio y una fecha para ver las horas disponibles</p>
+          <!-- Información Personal -->
+          <div class="form-section">
+            <h3><i class="fas fa-user"></i> Información Personal</h3>
+            
+            <div class="form-row">
+              <div class="form-group full-width">
+                <label for="nombre">Nombre Completo *</label>
+                <input type="text" id="nombre" name="nombre" required>
               </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group full-width">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
+              </div>
+            </div>
           </div>
 
-        <!-- Campo oculto para guardar la hora seleccionada -->
-        <input type="hidden" id="hora" name="hora" required>
-      </div>
-    </div>
+          <!-- Detalles de la Cita -->
+          <div class="form-section">
+            <h3><i class="fas fa-calendar-alt"></i> Detalles de la Cita</h3>
+    
+            <div class="form-row">
+              <div class="form-group">
+                <label for="servicio">Servicio *</label>
+                <select id="servicio" name="servicio" required>
+                  <option value="">Selecciona un servicio</option>
+                  <option value="Corte sencillo 💇🏻‍♂️ - $22.000">Corte sencillo 💇🏻‍♂️ - $22.000</option>
+                  <option value="Limpieza Facial 💆🏻 - $25.000">Limpieza Facial 💆🏻 - $25.000</option>
+                  <option value="Corte premium ⭐️ - $40.000">Corte premium ⭐️ - $40.000</option>
+                  <option value="Corte con barba 🧔🏻‍♂️ - $25.000">Corte con barba 🧔🏻‍♂️ - $25.000</option>
+                  <option value="Barba 🧔🏻‍♂️ - $7.000">Barba 🧔🏻‍♂️ - $7.000</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fecha">Fecha *</label>
+                <input type="date" id="fecha" name="fecha" required>
+              </div>
+            </div>
 
-        <!-- Botones -->
-        <div class="form-buttons">
-          <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn-confirmar">
-            <i class="fas fa-check"></i> Confirmar Reserva
-          </button>
+          <!-- CONTENEDOR DE HORAS DISPONIBLES -->
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label>Hora Disponible *</label>
+              <div id="horasDisponibles" class="horas-disponibles">
+                <div class="loading-horas">
+                  <p>Selecciona un servicio y una fecha para ver las horas disponibles</p>
+                </div>
+            </div>
+
+          <!-- Campo oculto para guardar la hora seleccionada -->
+          <input type="hidden" id="hora" name="hora" required>
         </div>
+      </div>
 
-      </form>
+          <!-- Botones -->
+          <div class="form-buttons">
+            <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn-confirmar">
+              <i class="fas fa-check"></i> Confirmar Reserva
+            </button>
+          </div>
 
-      <!-- Mensaje de éxito -->
+        </form>
+      </div>
+
+      <!-- Mensaje de éxito (FUERA del contenedor del formulario) -->
       <div id="mensajeExito" class="mensaje-exito" style="display: none;">
         <i class="fas fa-check-circle"></i>
         <h3>¡Reserva Confirmada!</h3>
