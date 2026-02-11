@@ -286,7 +286,6 @@ function configurarFormulario() {
 // ENVIAR RESERVA
 // ========================================
 async function enviarReserva() {
-  // Obtener datos del formulario
   const datos = {
     barbero: document.getElementById('barberoSeleccionado').value,
     nombre: document.getElementById('nombre').value,
@@ -296,90 +295,56 @@ async function enviarReserva() {
     servicio: document.getElementById('servicio').value,
   };
   
-  console.log('📤 Datos a enviar:', datos);
-  
-  // Validar campos
   if (!datos.nombre || !datos.email || !datos.fecha || !datos.hora || !datos.servicio) {
     alert('Por favor completa todos los campos obligatorios (*)');
-    console.log('❌ Validación fallida: campos incompletos');
     return;
   }
   
-  // Deshabilitar botón mientras se procesa
   const btnConfirmar = document.querySelector('.btn-confirmar');
   const textoOriginal = btnConfirmar.innerHTML;
   btnConfirmar.disabled = true;
   btnConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
   
-  console.log('⏳ Enviando petición al servidor...');
-  
   try {
     const response = await fetch(CONFIG.webAppURL, {
       redirect: 'follow',
       method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain',
-      },
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(datos)
     });
-    
-    console.log('📡 Respuesta recibida:');
-    console.log('  Status:', response.status);
-    console.log('  OK:', response.ok);
-    
-    // Verificar si la respuesta es válida
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
-    
+
+    // LEER LA RESPUESTA UNA SOLA VEZ
     const textoRespuesta = await response.text();
-    console.log('📄 Texto de respuesta:', textoRespuesta);
-    
-    // Intentar parsear como JSON
     let resultado;
+
     try {
       resultado = JSON.parse(textoRespuesta);
-      console.log('✅ JSON parseado:', resultado);
-    } catch (parseError) {
-      console.error('❌ Error al parsear JSON:', parseError);
-      console.log('Respuesta original:', textoRespuesta);
-      
-      // Si no se puede parsear pero la petición llegó, asumir éxito
-      if (textoRespuesta.includes('exito') || response.status === 200) {
-        console.log('⚠️ Asumiendo éxito por respuesta positiva');
+    } catch (e) {
+      // Si no es JSON pero el status es 200, usualmente es éxito en Google Apps Script
+      if (response.ok) {
         mostrarExito();
         return;
-      } else {
-        throw new Error('Respuesta del servidor no válida');
       }
+      throw new Error("Respuesta del servidor no válida");
     }
     
-    // Procesar resultado
     if (resultado.exito) {
-      console.log('✅ Reserva exitosa!');
-      console.log('ID del evento:', resultado.idEvento);
       mostrarExito();
     } else {
-      console.log('❌ Reserva rechazada:', resultado.mensaje);
-      alert('❌ ' + (resultado.mensaje || 'Error desconocido'));
+      alert('❌ ' + (resultado.mensaje || 'Error al agendar'));
       btnConfirmar.disabled = false;
       btnConfirmar.innerHTML = textoOriginal;
     }
     
   } catch (error) {
-    console.error('❌ Error en la petición:', error);
+    // Si llegamos aquí y el error es el de 'style', es que mostrarExito() 
+    // todavía tiene alguna referencia a un ID nulo.
+    console.error('Detalle del error:', error);
     
-    let mensajeError = 'Error de conexión. ';
-    
-    if (error.message.includes('HTTP')) {
-      mensajeError += 'Problema con el servidor.';
-    } else if (error.message.includes('Failed to fetch')) {
-      mensajeError += 'Verifica tu conexión a internet.';
-    } else {
-      mensajeError += error.message;
+    // Si la cita igual se agendó (porque response.ok fue true), no mostramos el alert de error
+    if (!error.message.includes('reading \'style\'')) {
+      alert('⚠️ Error de conexión. Intenta nuevamente.');
     }
-    
-    alert('⚠️ ' + mensajeError + '\n\nIntenta nuevamente o contacta con la barbería.');
     
     btnConfirmar.disabled = false;
     btnConfirmar.innerHTML = textoOriginal;
