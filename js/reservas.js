@@ -264,7 +264,7 @@ function seleccionarHora(hora, btn) {
   // Marcar como seleccionado
   btn.classList.add('selected');
   
-  // Guardar hora seleccionada
+  // Guardar hora seleccionada (Guardará "02:00 PM")
   document.getElementById('hora').value = hora;
   
   console.log('🕐 Hora seleccionada:', hora);
