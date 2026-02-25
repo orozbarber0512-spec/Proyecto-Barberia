@@ -254,12 +254,11 @@ function cerrarModal() {
 }
 
 // ========================================
-// CARGAR HORAS DISPONIBLES
+// CARGAR HORAS DISPONIBLES 
 // ========================================
 async function cargarHorasDisponibles() {
   if (!servicioActual || !fechaActual || !barberoActual) return;
   
-  // ✅ Rate Limiting
   if (!RateLimiter.permitirAccion('cargarHoras')) {
     const minutos = RateLimiter.obtenerTiempoEspera('cargarHoras');
     mostrarError(`Demasiados intentos. Espera ${minutos} minutos.`);
@@ -267,13 +266,11 @@ async function cargarHorasDisponibles() {
   }
   
   RateLimiter.registrarIntento('cargarHoras');
-  
   mostrarCargando();
   
   try {
     const barberoNombre = CONFIG.barberos[barberoActual];
     
-    // ✅ Construir URL de forma segura
     const params = new URLSearchParams({
       action: 'obtenerHoras',
       barbero: barberoNombre,
@@ -282,44 +279,35 @@ async function cargarHorasDisponibles() {
     });
     
     const url = `${CONFIG.webAppURL}?${params.toString()}`;
-    
-    // ✅ Timeout de 10 segundos
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
     
     const response = await fetch(url, { 
       signal: controller.signal,
-      // ✅ MEJORA: Headers de seguridad
-      headers: {
-        'Accept': 'application/json'
-      }
+      headers: { 'Accept': 'application/json' }
     });
     
     clearTimeout(timeoutId);
-    
-    // ✅ Validar respuesta del servidor
-    if (!response.ok) {
-      throw new Error(`Error del servidor: ${response.status}`);
-    }
-    
     const resultado = await response.json();
     
-    // ✅ Validar estructura de la respuesta
-    if (!resultado || typeof resultado.exito !== 'boolean') {
-      throw new Error('Respuesta inválida del servidor');
+    // --- NUEVA LÓGICA DE BLOQUEO ---
+    if (resultado.exito === false && resultado.bloqueado === true) {
+      // Muestra el mensaje personalizado que viene del Google Script
+      mostrarMensajeHoras(resultado.mensaje);
+      return; 
     }
-    
+    // -------------------------------
+
     if (resultado.exito && Array.isArray(resultado.horas) && resultado.horas.length > 0) {
-      // ✅ Validar cada hora antes de mostrar
       const horasValidas = resultado.horas.filter(hora => validarHora(hora));
       
       if (horasValidas.length > 0) {
         mostrarHoras(horasValidas);
       } else {
-        mostrarMensajeHoras('❌ No hay horarios disponibles');
+        mostrarMensajeHoras('❌ No hay horarios disponibles para este servicio');
       }
     } else {
-      mostrarMensajeHoras('❌ No hay horarios disponibles para esta fecha y servicio');
+      mostrarMensajeHoras('❌ No hay horarios disponibles para esta fecha');
     }
     
   } catch (error) {
