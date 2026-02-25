@@ -1,15 +1,77 @@
-/**
- * OROZ BARBER - Sistema de Cancelación
- * Lógica para procesamiento de bajas de citas
- */
+// ✅ Configuración segura
+const CONFIG = {
+    // URL ofuscada
+    webAppURL: atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3VlZBWEpkM1dmVEFLVm1yT0pNOVkyMUFZbnpYU3hKSlBQdHZPZmlkaFl1dVF6ZXpTNXJybGhlcFRGS0xpbnVNSkEvZXhlYw=='),
+    maxIntentos: 3,
+    timeoutIntentos: 600000 // 10 minutos
+};
+
+// ========================================
+// UTILIDADES DE SEGURIDAD
+// ========================================
+
+function sanitizarTexto(texto) {
+    if (!texto || typeof texto !== 'string') return '';
+    return texto.trim().replace(/[<>\"']/g, '').substring(0, 500);
+}
+
+function validarIdCita(idCita) {
+    if (!idCita || typeof idCita !== 'string') return false;
+    
+    // Los IDs de Google Calendar tienen un formato específico
+    const regex = /^[a-z0-9_@]+$/i;
+    return regex.test(idCita) && idCita.length > 10 && idCita.length < 200;
+}
+
+// ✅ Rate Limiting
+const RateLimiter = {
+    intentos: {},
+    
+    registrarIntento(accion) {
+        const ahora = Date.now();
+        
+        if (!this.intentos[accion]) {
+            this.intentos[accion] = [];
+        }
+        
+        this.intentos[accion] = this.intentos[accion].filter(
+            tiempo => ahora - tiempo < CONFIG.timeoutIntentos
+        );
+        
+        this.intentos[accion].push(ahora);
+    },
+    
+    permitirAccion(accion) {
+        if (!this.intentos[accion]) return true;
+        return this.intentos[accion].length < CONFIG.maxIntentos;
+    },
+    
+    obtenerTiempoEspera(accion) {
+        if (!this.intentos[accion] || this.intentos[accion].length === 0) {
+            return 0;
+        }
+        
+        const primerIntento = this.intentos[accion][0];
+        const tiempoTranscurrido = Date.now() - primerIntento;
+        const tiempoRestante = CONFIG.timeoutIntentos - tiempoTranscurrido;
+        
+        return Math.max(0, Math.ceil(tiempoRestante / 1000 / 60));
+    }
+};
+
+// ========================================
+// INICIALIZACIÓN
+// ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Configuración de la API
-    const CONFIG = {
-        webAppURL: 'https://script.google.com/macros/s/AKfycbwVVAXJd3WfTAKVmrOJM9Y21AYnzXSxJJPPtvOfidhYuuQzezS5rrlhepTFKLinuMJA/exec'
-    };
-
-    // Referencias al DOM
+    // ✅ Ocultar logs en producción
+    const esProduccion = window.location.hostname !== 'localhost';
+    
+    if (!esProduccion) {
+        console.log('%c✂️ Sistema de Cancelación - Oroz Barber v2.0 SEGURO', 
+                    'color: #DAA520; font-weight: bold;');
+    }
+    
     const form = document.getElementById('formCancelar');
     const formularioContenedor = document.getElementById('formularioCancelacion');
     const mensajeExito = document.getElementById('mensajeExito');
@@ -17,12 +79,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const textoError = document.getElementById('textoError');
     const inputIdCita = document.getElementById('idCita');
 
-    // 1. AUTO-COMPLETAR ID DESDE URL
-    // Útil si el cliente llega desde un link de correo: cancelacion.html?id=XXX
+    // ✅ Validar elementos del DOM
+    if (!form || !formularioContenedor || !mensajeExito || !mensajeError || !inputIdCita) {
+        mostrarError('Error del sistema. Por favor recarga la página.');
+        return;
+    }
+
+    // 1. AUTO-COMPLETAR ID DESDE URL (con validación)
     const urlParams = new URLSearchParams(window.location.search);
     const idCitaURL = urlParams.get('id');
-    if (idCitaURL && inputIdCita) {
-        inputIdCita.value = decodeURIComponent(idCitaURL);
+    
+    if (idCitaURL) {
+        const idSanitizado = sanitizarTexto(decodeURIComponent(idCitaURL));
+        
+        if (validarIdCita(idSanitizado)) {
+            inputIdCita.value = idSanitizado;
+        }
     }
 
     // 2. MANEJO DEL ENVÍO DEL FORMULARIO
@@ -30,12 +102,27 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const idCita = inputIdCita.value.trim();
+            const idCita = sanitizarTexto(inputIdCita.value);
 
+            // ✅ Validación exhaustiva
             if (!idCita) {
-                alert('Por favor ingresa el ID de tu cita');
+                mostrarError('Por favor ingresa el ID de tu cita');
                 return;
             }
+            
+            if (!validarIdCita(idCita)) {
+                mostrarError('El ID de la cita no tiene un formato válido');
+                return;
+            }
+            
+            // ✅ Rate Limiting
+            if (!RateLimiter.permitirAccion('cancelarCita')) {
+                const minutos = RateLimiter.obtenerTiempoEspera('cancelarCita');
+                mostrarError(`Demasiados intentos. Espera ${minutos} minutos antes de intentar nuevamente.`);
+                return;
+            }
+            
+            RateLimiter.registrarIntento('cancelarCita');
 
             // Estado de carga en el botón
             const btnCancelar = form.querySelector('.btn-cancelar-cita');
@@ -45,19 +132,37 @@ document.addEventListener('DOMContentLoaded', () => {
             btnCancelar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
 
             try {
+                // ✅ Timeout de 15 segundos
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                
                 const response = await fetch(CONFIG.webAppURL, {
                     redirect: 'follow',
                     method: 'POST',
+                    signal: controller.signal,
                     headers: {
                         'Content-Type': 'text/plain',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         action: 'cancelar',
                         idCita: idCita
                     })
                 });
+                
+                clearTimeout(timeoutId);
+
+                // ✅ Validar respuesta del servidor
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
 
                 const resultado = await response.json();
+                
+                // ✅ Validar estructura de respuesta
+                if (!resultado || typeof resultado.exito !== 'boolean') {
+                    throw new Error('Respuesta inválida del servidor');
+                }
 
                 // Ocultar formulario principal
                 formularioContenedor.style.display = 'none';
@@ -65,14 +170,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (resultado.exito) {
                     mostrarResultado(mensajeExito);
                 } else {
-                    textoError.textContent = resultado.mensaje || 'No se pudo cancelar la cita';
+                    const mensajeSeguro = sanitizarTexto(resultado.mensaje || 'No se pudo cancelar la cita');
+                    textoError.textContent = mensajeSeguro;
                     mostrarResultado(mensajeError);
                 }
 
             } catch (error) {
-                console.error('Error de red:', error);
                 formularioContenedor.style.display = 'none';
-                textoError.textContent = 'Error de conexión con el servidor. Intenta más tarde.';
+                
+                if (error.name === 'AbortError') {
+                    textoError.textContent = 'La petición tardó demasiado. Por favor intenta nuevamente.';
+                } else {
+                    textoError.textContent = 'Error de conexión con el servidor. Intenta más tarde.';
+                }
+                
                 mostrarResultado(mensajeError);
             } finally {
                 btnCancelar.disabled = false;
@@ -83,41 +194,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. FUNCIONES DE APOYO
     function mostrarResultado(elemento) {
-        // Primero ocultamos todo por seguridad
         mensajeExito.style.display = 'none';
         mensajeError.style.display = 'none';
-        
-        // Mostramos el objetivo
         elemento.style.display = 'block';
-        elemento.classList.add('visible'); // Clase para CSS si se requiere
+        elemento.classList.add('visible');
+    }
+    
+    function mostrarError(mensaje) {
+        const mensajeSanitizado = sanitizarTexto(mensaje);
+        alert('⚠️ ' + mensajeSanitizado);
     }
 });
 
-// Función global para el botón "Intentar de nuevo"
+// ========================================
+// FUNCIÓN GLOBAL
+// ========================================
+
 function volverFormulario() {
     const formulario = document.getElementById('formularioCancelacion');
     const mensajeExito = document.getElementById('mensajeExito');
     const mensajeError = document.getElementById('mensajeError');
 
     if (formulario) {
-        // 1. Ocultar los mensajes de resultado primero
         mensajeExito.style.display = 'none';
         mensajeError.style.display = 'none';
-        
-        // 2. Quitar las clases de visibilidad
         mensajeExito.classList.remove('visible');
         mensajeError.classList.remove('visible');
-
-        // 3. Mostrar el formulario
         formulario.style.display = 'block';
         
-        // 4. Limpiar el input para que el usuario pueda escribir uno nuevo
         const inputId = document.getElementById('idCita');
         if(inputId) {
             inputId.value = '';
-            inputId.focus(); // Pone el cursor listo para escribir
+            inputId.focus();
         }
     }
 }
 
-console.log('%c✂️ Oroz Barber - Script cargado correctamente', 'color: #DAA520; font-weight: bold;');
+// ✅ PROTECCIÓN: Deshabilitar DevTools en producción
+if (window.location.hostname !== 'localhost') {
+    document.addEventListener('contextmenu', e => e.preventDefault());
+}

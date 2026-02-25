@@ -1,15 +1,108 @@
-// ========================================
-// OROZ BARBER - SISTEMA DE RESERVAS v2.1
-// CORREGIDO: Ahora oculta el contenedor completo del formulario
-// ========================================
-
 const CONFIG = {
-  webAppURL: 'https://script.google.com/macros/s/AKfycbwVVAXJd3WfTAKVmrOJM9Y21AYnzXSxJJPPtvOfidhYuuQzezS5rrlhepTFKLinuMJA/exec',
+  // ✅ MEJORA: URL ofuscada (más difícil de extraer con bots)
+  webAppURL: atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3VlZBWEpkM1dmVEFLVm1yT0pNOVkyMUFZbnpYU3hKSlBQdHZPZmlkaFl1dVF6ZXpTNXJybGhlcFRGS0xpbnVNSkEvZXhlYw=='),
   
   barberos: {
     barbero1: 'Felipe Orozco',
     barbero2: 'Tomas Orozco',
     barbero3: 'Sergio Jiménez'
+  },
+  
+  // ✅ NUEVO: Límites de seguridad
+  maxIntentos: 5,
+  timeoutIntentos: 300000, // 5 minutos
+  maxLongitudNombre: 100,
+  maxLongitudEmail: 254
+};
+
+// ========================================
+// UTILIDADES DE SEGURIDAD
+// ========================================
+
+// ✅ Sanitizar entrada de texto (prevenir XSS)
+function sanitizarTexto(texto) {
+  if (!texto || typeof texto !== 'string') return '';
+  
+  return texto
+    .trim()
+    .replace(/[<>\"']/g, '') // Eliminar caracteres peligrosos
+    .substring(0, 200); // Limitar longitud
+}
+
+// ✅ Validar formato de email
+function validarEmail(email) {
+  const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return regex.test(email) && email.length <= CONFIG.maxLongitudEmail;
+}
+
+// ✅ Validar nombre (solo letras, espacios y acentos)
+function validarNombre(nombre) {
+  if (!nombre || nombre.length < 3 || nombre.length > CONFIG.maxLongitudNombre) {
+    return false;
+  }
+  
+  const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+  return regex.test(nombre);
+}
+
+// ✅ Validar fecha (formato YYYY-MM-DD y fecha futura)
+function validarFecha(fechaStr) {
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!regex.test(fechaStr)) return false;
+  
+  const fecha = new Date(fechaStr + 'T00:00:00');
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  
+  // No debe ser domingo (día 0)
+  if (fecha.getDay() === 0) return false;
+  
+  // Debe ser fecha futura
+  return fecha >= hoy;
+}
+
+// ✅ Validar hora (formato HH:MM AM/PM)
+function validarHora(horaStr) {
+  const regex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$/;
+  return regex.test(horaStr);
+}
+
+// ✅ Rate Limiting (prevenir spam)
+const RateLimiter = {
+  intentos: {},
+  
+  registrarIntento(accion) {
+    const ahora = Date.now();
+    
+    if (!this.intentos[accion]) {
+      this.intentos[accion] = [];
+    }
+    
+    // Limpiar intentos antiguos (más de 5 minutos)
+    this.intentos[accion] = this.intentos[accion].filter(
+      tiempo => ahora - tiempo < CONFIG.timeoutIntentos
+    );
+    
+    // Registrar nuevo intento
+    this.intentos[accion].push(ahora);
+  },
+  
+  permitirAccion(accion) {
+    if (!this.intentos[accion]) return true;
+    
+    return this.intentos[accion].length < CONFIG.maxIntentos;
+  },
+  
+  obtenerTiempoEspera(accion) {
+    if (!this.intentos[accion] || this.intentos[accion].length === 0) {
+      return 0;
+    }
+    
+    const primerIntento = this.intentos[accion][0];
+    const tiempoTranscurrido = Date.now() - primerIntento;
+    const tiempoRestante = CONFIG.timeoutIntentos - tiempoTranscurrido;
+    
+    return Math.max(0, Math.ceil(tiempoRestante / 1000 / 60)); // minutos
   }
 };
 
@@ -25,7 +118,13 @@ let fechaActual = '';
 // INICIALIZACIÓN
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('%c💈 Sistema de Reservas - Oroz Barber v2.1', 'font-size: 16px; color: #DAA520; font-weight: bold;');
+  // ✅ MEJORA: Ocultar logs en producción
+  const esProduccion = window.location.hostname !== 'localhost' && 
+                       !window.location.hostname.includes('127.0.0.1');
+  
+  if (!esProduccion) {
+    console.log('%c💈 Sistema de Reservas - Oroz Barber v3.0 SEGURO', 'font-size: 16px; color: #DAA520; font-weight: bold;');
+  }
   
   // Inicializar referencias del DOM
   modal = document.getElementById('reservaModal');
@@ -33,67 +132,58 @@ document.addEventListener('DOMContentLoaded', () => {
   mensajeExito = document.getElementById('mensajeExito');
   contenedorFormulario = document.getElementById('contenedorFormulario');
   
-  // Verificar que los elementos existen
-  console.log('🔍 Verificando elementos del DOM:');
-  console.log('Modal:', modal ? '✅' : '❌');
-  console.log('Formulario:', form ? '✅' : '❌');
-  console.log('Mensaje de éxito:', mensajeExito ? '✅' : '❌');
-  console.log('Contenedor formulario:', contenedorFormulario ? '✅' : '❌');
-  
   if (!modal || !form || !mensajeExito || !contenedorFormulario) {
-    console.error('❌ ERROR: Faltan elementos del DOM. Revisa el HTML.');
+    mostrarError('Error del sistema. Por favor recarga la página.');
     return;
   }
   
-  // Configurar fecha mínima
   configurarFecha();
-  
-  // Configurar eventos de barberos
   configurarBarberos();
-  
-  // Configurar modal
   configurarModal();
-  
-  // Configurar formulario
   configurarFormulario();
-  
-  console.log('✅ Sistema inicializado correctamente');
 });
 
 // ========================================
-// CONFIGURAR FECHA MÍNIMA
+// CONFIGURAR FECHA
 // ========================================
 function configurarFecha() {
   const inputFecha = document.getElementById('fecha');
   const hoy = new Date().toISOString().split('T')[0];
   inputFecha.setAttribute('min', hoy);
   
-   // Abrir calendario al hacer click en cualquier parte =====
-  inputFecha.addEventListener('click', function() {
-    if (this.showPicker) {
-      this.showPicker();
-    }
-  });
+  // ✅ Límite máximo: 3 meses en el futuro
+  const maxFecha = new Date();
+  maxFecha.setMonth(maxFecha.getMonth() + 3);
+  inputFecha.setAttribute('max', maxFecha.toISOString().split('T')[0]);
   
-  // Desactivar domingos
+  inputFecha.addEventListener('click', function() {
+    if (this.showPicker) this.showPicker();
+  });
   
   inputFecha.addEventListener('input', (e) => {
-    const fecha = new Date(e.target.value + 'T00:00:00');
-    if (fecha.getDay() === 0) {
-      alert('Lo sentimos, no trabajamos los domingos. Por favor selecciona otro día.');
+    const fechaValor = e.target.value;
+    
+    // ✅ Validación de seguridad
+    if (!validarFecha(fechaValor)) {
+      mostrarError('Fecha no válida. Por favor selecciona otra fecha.');
       e.target.value = '';
-    } else {
-      fechaActual = e.target.value;
-      console.log('📅 Fecha seleccionada:', fechaActual);
-      cargarHorasDisponibles();
+      return;
     }
+    
+    const fecha = new Date(fechaValor + 'T00:00:00');
+    if (fecha.getDay() === 0) {
+      mostrarError('Lo sentimos, no trabajamos los domingos.');
+      e.target.value = '';
+      return;
+    }
+    
+    fechaActual = fechaValor;
+    cargarHorasDisponibles();
   });
   
-  // Actualizar horas cuando cambia el servicio
   const selectServicio = document.getElementById('servicio');
   selectServicio.addEventListener('change', (e) => {
-    servicioActual = e.target.value;
-    console.log('✂️ Servicio seleccionado:', servicioActual);
+    servicioActual = sanitizarTexto(e.target.value);
     cargarHorasDisponibles();
   });
 }
@@ -104,9 +194,16 @@ function configurarFecha() {
 function configurarBarberos() {
   document.querySelectorAll('.barbero-card').forEach(card => {
     card.addEventListener('click', () => {
-      barberoActual = card.getAttribute('data-barbero');
-      console.log('👤 Barbero seleccionado:', CONFIG.barberos[barberoActual]);
-      abrirModal(barberoActual);
+      const barberoId = card.getAttribute('data-barbero');
+      
+      // ✅ Validación: verificar que el barbero existe
+      if (!CONFIG.barberos[barberoId]) {
+        mostrarError('Barbero no válido.');
+        return;
+      }
+      
+      barberoActual = barberoId;
+      abrirModal(barberoId);
     });
   });
 }
@@ -115,13 +212,11 @@ function configurarBarberos() {
 // CONFIGURAR MODAL
 // ========================================
 function configurarModal() {
-  // Cerrar al hacer click en X
   const btnCerrar = document.querySelector('.modal-close');
   if (btnCerrar) {
     btnCerrar.addEventListener('click', cerrarModal);
   }
-   
-  // Cerrar con tecla ESC
+  
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.style.display === 'block') {
       cerrarModal();
@@ -130,11 +225,9 @@ function configurarModal() {
 }
 
 // ========================================
-// ABRIR MODAL
+// ABRIR/CERRAR MODAL
 // ========================================
 function abrirModal(barbero) {
-  console.log('🔓 Abriendo modal para:', CONFIG.barberos[barbero]);
-  
   const nombreBarbero = CONFIG.barberos[barbero];
   document.getElementById('barberoNombre').textContent = nombreBarbero;
   document.getElementById('barberoSeleccionado').value = nombreBarbero;
@@ -142,88 +235,99 @@ function abrirModal(barbero) {
   modal.style.display = 'block';
   document.body.style.overflow = 'hidden';
   
-  // Mostrar formulario y ocultar mensaje
   contenedorFormulario.style.display = 'block';
   mensajeExito.style.display = 'none';
   
-  // Resetear formulario
   form.reset();
-  
-  // Resetear variables
   servicioActual = '';
   fechaActual = '';
   
-  // Resetear horas disponibles
   mostrarMensajeHoras('Selecciona un servicio y una fecha para ver las horas disponibles');
-  
-  console.log('✅ Modal abierto correctamente');
 }
 
-// ========================================
-// CERRAR MODAL
-// ========================================
 function cerrarModal() {
   modal.style.display = 'none';
   document.body.style.overflow = 'auto';
   contenedorFormulario.style.display = 'block';
   mensajeExito.style.display = 'none';
-  
   form.reset();
-  
 }
-
-// Cerrar al hacer click en X
-document.querySelector('.modal-close').addEventListener('click', cerrarModal);
-
-// Cerrar al hacer click fuera del modal
-window.addEventListener('click', (e) => {
-  if (e.target === modal) {
-    cerrarModal();
-  }
-});
-
-// Cerrar con tecla ESC
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && modal.style.display === 'block') {
-    cerrarModal();
-  }
-});
 
 // ========================================
 // CARGAR HORAS DISPONIBLES
 // ========================================
 async function cargarHorasDisponibles() {
-  if (!servicioActual || !fechaActual || !barberoActual) {
-    console.log('⏸️ Esperando servicio, fecha y barbero...');
+  if (!servicioActual || !fechaActual || !barberoActual) return;
+  
+  // ✅ Rate Limiting
+  if (!RateLimiter.permitirAccion('cargarHoras')) {
+    const minutos = RateLimiter.obtenerTiempoEspera('cargarHoras');
+    mostrarError(`Demasiados intentos. Espera ${minutos} minutos.`);
     return;
   }
   
-  console.log('⏰ Cargando horas disponibles...');
-  console.log('  Barbero:', CONFIG.barberos[barberoActual]);
-  console.log('  Servicio:', servicioActual);
-  console.log('  Fecha:', fechaActual);
+  RateLimiter.registrarIntento('cargarHoras');
   
   mostrarCargando();
   
   try {
-    const url = `${CONFIG.webAppURL}?action=obtenerHoras&barbero=${encodeURIComponent(CONFIG.barberos[barberoActual])}&fecha=${fechaActual}&servicio=${encodeURIComponent(servicioActual)}`;
+    const barberoNombre = CONFIG.barberos[barberoActual];
     
-    const response = await fetch(url);
+    // ✅ Construir URL de forma segura
+    const params = new URLSearchParams({
+      action: 'obtenerHoras',
+      barbero: barberoNombre,
+      fecha: fechaActual,
+      servicio: servicioActual
+    });
+    
+    const url = `${CONFIG.webAppURL}?${params.toString()}`;
+    
+    // ✅ Timeout de 10 segundos
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const response = await fetch(url, { 
+      signal: controller.signal,
+      // ✅ MEJORA: Headers de seguridad
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
+    clearTimeout(timeoutId);
+    
+    // ✅ Validar respuesta del servidor
+    if (!response.ok) {
+      throw new Error(`Error del servidor: ${response.status}`);
+    }
+    
     const resultado = await response.json();
     
-    console.log('📥 Respuesta de horas:', resultado);
+    // ✅ Validar estructura de la respuesta
+    if (!resultado || typeof resultado.exito !== 'boolean') {
+      throw new Error('Respuesta inválida del servidor');
+    }
     
-    if (resultado.exito && resultado.horas.length > 0) {
-      console.log(`✅ ${resultado.horas.length} horas disponibles encontradas`);
-      mostrarHoras(resultado.horas);
+    if (resultado.exito && Array.isArray(resultado.horas) && resultado.horas.length > 0) {
+      // ✅ Validar cada hora antes de mostrar
+      const horasValidas = resultado.horas.filter(hora => validarHora(hora));
+      
+      if (horasValidas.length > 0) {
+        mostrarHoras(horasValidas);
+      } else {
+        mostrarMensajeHoras('❌ No hay horarios disponibles');
+      }
     } else {
-      console.log('⚠️ No hay horas disponibles');
       mostrarMensajeHoras('❌ No hay horarios disponibles para esta fecha y servicio');
     }
     
   } catch (error) {
-    console.error('❌ Error al cargar horas:', error);
-    mostrarMensajeHoras('⚠️ Error al cargar horarios. Por favor intenta nuevamente.');
+    if (error.name === 'AbortError') {
+      mostrarError('La petición tardó demasiado. Intenta nuevamente.');
+    } else {
+      mostrarError('Error al cargar horarios. Por favor intenta nuevamente.');
+    }
   }
 }
 
@@ -239,9 +343,11 @@ function mostrarCargando() {
 
 function mostrarMensajeHoras(mensaje) {
   const contenedorHoras = document.getElementById('horasDisponibles');
+  // ✅ Sanitizar mensaje antes de mostrar
+  const mensajeSanitizado = sanitizarTexto(mensaje);
   contenedorHoras.innerHTML = `
     <div class="loading-horas">
-      <p>${mensaje}</p>
+      <p>${mensajeSanitizado}</p>
     </div>
   `;
 }
@@ -257,6 +363,7 @@ function mostrarHoras(horas) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'hora-btn';
+    // ✅ Usar textContent en lugar de innerHTML (previene XSS)
     btn.textContent = hora;
     btn.onclick = () => seleccionarHora(hora, btn);
     grid.appendChild(btn);
@@ -266,16 +373,15 @@ function mostrarHoras(horas) {
 }
 
 function seleccionarHora(hora, btn) {
-  // Remover selección anterior
+  // ✅ Validar hora antes de guardar
+  if (!validarHora(hora)) {
+    mostrarError('Hora no válida.');
+    return;
+  }
+  
   document.querySelectorAll('.hora-btn').forEach(b => b.classList.remove('selected'));
-  
-  // Marcar como seleccionado
   btn.classList.add('selected');
-  
-  // Guardar hora seleccionada (Guardará "02:00 PM")
   document.getElementById('hora').value = hora;
-  
-  console.log('🕐 Hora seleccionada:', hora);
 }
 
 // ========================================
@@ -284,8 +390,6 @@ function seleccionarHora(hora, btn) {
 function configurarFormulario() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    console.log('📝 Formulario enviado');
-    
     await enviarReserva();
   });
 }
@@ -294,19 +398,53 @@ function configurarFormulario() {
 // ENVIAR RESERVA
 // ========================================
 async function enviarReserva() {
-  const datos = {
-    barbero: document.getElementById('barberoSeleccionado').value,
-    nombre: document.getElementById('nombre').value,
-    email: document.getElementById('email').value,
-    fecha: document.getElementById('fecha').value,
-    hora: document.getElementById('hora').value,
-    servicio: document.getElementById('servicio').value,
-  };
-  
-  if (!datos.nombre || !datos.email || !datos.fecha || !datos.hora || !datos.servicio) {
-    alert('Por favor completa todos los campos obligatorios (*)');
+  // ✅ Rate Limiting para envío de reservas
+  if (!RateLimiter.permitirAccion('enviarReserva')) {
+    const minutos = RateLimiter.obtenerTiempoEspera('enviarReserva');
+    mostrarError(`Demasiados intentos. Espera ${minutos} minutos.`);
     return;
   }
+  
+  // ✅ Recopilar y sanitizar datos
+  const nombre = sanitizarTexto(document.getElementById('nombre').value);
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const fecha = document.getElementById('fecha').value;
+  const hora = document.getElementById('hora').value;
+  const servicio = document.getElementById('servicio').value;
+  const barbero = CONFIG.barberos[barberoActual];
+  
+  // ✅ VALIDACIONES EXHAUSTIVAS
+  if (!validarNombre(nombre)) {
+    mostrarError('Por favor ingresa un nombre válido (solo letras).');
+    return;
+  }
+  
+  if (!validarEmail(email)) {
+    mostrarError('Por favor ingresa un email válido.');
+    return;
+  }
+  
+  if (!validarFecha(fecha)) {
+    mostrarError('Por favor selecciona una fecha válida.');
+    return;
+  }
+  
+  if (!validarHora(hora)) {
+    mostrarError('Por favor selecciona una hora válida.');
+    return;
+  }
+  
+  if (!servicio || servicio === '') {
+    mostrarError('Por favor selecciona un servicio.');
+    return;
+  }
+  
+  if (!barbero) {
+    mostrarError('Por favor selecciona un barbero.');
+    return;
+  }
+  
+  const datos = { barbero, nombre, email, fecha, hora, servicio };
   
   const btnConfirmar = document.querySelector('.btn-confirmar');
   const textoOriginal = btnConfirmar.innerHTML;
@@ -314,21 +452,31 @@ async function enviarReserva() {
   btnConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
   
   try {
+    RateLimiter.registrarIntento('enviarReserva');
+    
+    // ✅ Timeout de 15 segundos
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    
     const response = await fetch(CONFIG.webAppURL, {
       redirect: 'follow',
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
+      signal: controller.signal,
+      headers: { 
+        'Content-Type': 'text/plain',
+        'Accept': 'application/json'
+      },
       body: JSON.stringify(datos)
     });
-
-    // LEER LA RESPUESTA UNA SOLA VEZ
+    
+    clearTimeout(timeoutId);
+    
     const textoRespuesta = await response.text();
     let resultado;
 
     try {
       resultado = JSON.parse(textoRespuesta);
     } catch (e) {
-      // Si no es JSON pero el status es 200, usualmente es éxito en Google Apps Script
       if (response.ok) {
         mostrarExito();
         return;
@@ -336,22 +484,20 @@ async function enviarReserva() {
       throw new Error("Respuesta del servidor no válida");
     }
     
-    if (resultado.exito) {
+    // ✅ Validar respuesta
+    if (resultado && resultado.exito === true) {
       mostrarExito();
     } else {
-      alert('❌ ' + (resultado.mensaje || 'Error al agendar'));
+      mostrarError(resultado.mensaje || 'Error al agendar la cita.');
       btnConfirmar.disabled = false;
       btnConfirmar.innerHTML = textoOriginal;
     }
     
   } catch (error) {
-    // Si llegamos aquí y el error es el de 'style', es que mostrarExito() 
-    // todavía tiene alguna referencia a un ID nulo.
-    console.error('Detalle del error:', error);
-    
-    // Si la cita igual se agendó (porque response.ok fue true), no mostramos el alert de error
-    if (!error.message.includes('reading \'style\'')) {
-      alert('⚠️ Error de conexión. Intenta nuevamente.');
+    if (error.name === 'AbortError') {
+      mostrarError('La petición tardó demasiado. Por favor intenta nuevamente.');
+    } else {
+      mostrarError('Error de conexión. Por favor intenta nuevamente.');
     }
     
     btnConfirmar.disabled = false;
@@ -363,51 +509,19 @@ async function enviarReserva() {
 // MOSTRAR MENSAJE DE ÉXITO
 // ========================================
 function mostrarExito() {
-  console.log('🎉 Mostrando mensaje de éxito...');
+  if (!contenedorFormulario || !mensajeExito) return;
   
-  // Verificar que los elementos existen
-  if (!contenedorFormulario || !mensajeExito) {
-    console.error('❌ ERROR: Elementos no encontrados');
-    console.log('contenedorFormulario:', contenedorFormulario);
-    console.log('mensajeExito:', mensajeExito);
-    return;
-  }
-  
-  console.log('  Estado actual:');
-  console.log('    contenedorFormulario.display:', window.getComputedStyle(contenedorFormulario).display);
-  console.log('    mensajeExito.display:', window.getComputedStyle(mensajeExito).display);
-  
-  // OCULTAR TODO EL CONTENEDOR DEL FORMULARIO (incluye header)
   contenedorFormulario.style.display = 'none';
-  console.log('  ✓ Contenedor del formulario ocultado');
-  
-  // Forzar reflow del navegador
   void mensajeExito.offsetHeight;
-  
-
-  // MOSTRAR MENSAJE DE ÉXITO
   mensajeExito.style.display = 'block';
-  console.log('  ✓ Mensaje de éxito mostrado');
-  
-  // Verificar cambios
-  console.log('  Nuevo estado:');
-  console.log('    contenedorFormulario.display:', window.getComputedStyle(contenedorFormulario).display);
-  console.log('    mensajeExito.display:', window.getComputedStyle(mensajeExito).display);
-  
-  //Asegurar que el modal siga visible
   modal.style.display = 'block';
   document.body.style.overflow = 'hidden';
 
-  // Scroll al inicio del modal
   const modalContent = document.querySelector('.modal-content');
   if (modalContent) {
     modalContent.scrollTop = 0;
-    console.log('  ✓ Scroll al inicio del modal');
   }
   
-  console.log('✅ Mensaje de éxito mostrado correctamente');
-  
-  // Restaurar botón después de 3 segundos
   setTimeout(() => {
     const btnConfirmar = document.querySelector('.btn-confirmar');
     if (btnConfirmar) {
@@ -415,6 +529,15 @@ function mostrarExito() {
       btnConfirmar.innerHTML = '<i class="fas fa-check"></i> Confirmar Reserva';
     }
   }, 3000);
+}
+
+// ========================================
+// MOSTRAR ERROR
+// ========================================
+function mostrarError(mensaje) {
+  // ✅ Sanitizar mensaje de error
+  const mensajeSanitizado = sanitizarTexto(mensaje);
+  alert('⚠️ ' + mensajeSanitizado);
 }
 
 // ========================================
@@ -428,15 +551,17 @@ if (btnVolver) {
   });
 }
 
-// ========================================
-// EXPONER FUNCIONES PARA DEBUGGING
-// ========================================
-window.debugReservas = {
-  mostrarExito,
-  abrirModal,
-  cerrarModal,
-  cargarHorasDisponibles,
-  CONFIG
-};
-
-console.log('%c✅ Sistema cargado. Usa window.debugReservas para debugging', 'color: #4CAF50; font-weight: bold;');
+// ✅ PROTECCIÓN: Deshabilitar inspección excesiva en producción
+if (window.location.hostname !== 'localhost') {
+  // Deshabilitar click derecho
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  
+  // Detectar DevTools abierto (dificulta robo de API)
+  setInterval(() => {
+    const threshold = 160;
+    if (window.outerWidth - window.innerWidth > threshold || 
+        window.outerHeight - window.innerHeight > threshold) {
+      // DevTools abierto - puedes tomar acciones aquí
+    }
+  }, 1000);
+}

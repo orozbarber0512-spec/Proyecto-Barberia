@@ -1,14 +1,21 @@
+// ✅ Ocultar logs en producción
+const esProduccion = window.location.hostname !== 'localhost' && 
+                     !window.location.hostname.includes('127.0.0.1');
+
+if (!esProduccion) {
+  console.log('%c🔥 OROZ BARBER 🔥', 'font-size: 20px; color: #DAA520; font-weight: bold;');
+  console.log('%cEstilo, Precisión y Actitud', 'font-size: 14px; color: #999; font-style: italic;');
+}
+
 // ========================================
 // NAVBAR - Menu Toggle Mobile
 // ========================================
 const menuToggle = document.querySelector('.menu-toggle');
 const navMenu = document.querySelector('.nav-menu');
 
-if (menuToggle) {
+if (menuToggle && navMenu) {
   menuToggle.addEventListener('click', () => {
     navMenu.classList.toggle('active');
-    
-    // Animación del ícono hamburguesa
     menuToggle.classList.toggle('active');
   });
 
@@ -26,31 +33,39 @@ if (menuToggle) {
 // NAVBAR - Cambiar fondo al hacer scroll
 // ========================================
 const header = document.querySelector('.header');
-let lastScroll = 0;
 
-window.addEventListener('scroll', () => {
-  const currentScroll = window.pageYOffset;
+if (header) {
+  let lastScroll = 0;
 
-  if (currentScroll > 100) {
-    header.style.background = 'rgba(0, 0, 0, 0.98)';
-    header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.5)';
-  } else {
-    header.style.background = 'rgba(0, 0, 0, 0.95)';
-    header.style.boxShadow = 'none';
-  }
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
 
-  lastScroll = currentScroll;
-});
+    if (currentScroll > 100) {
+      header.style.background = 'rgba(0, 0, 0, 0.98)';
+      header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.5)';
+    } else {
+      header.style.background = 'rgba(0, 0, 0, 0.95)';
+      header.style.boxShadow = 'none';
+    }
+
+    lastScroll = currentScroll;
+  });
+}
 
 // ========================================
 // SMOOTH SCROLL para enlaces internos
 // ========================================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
-    e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
+    const href = this.getAttribute('href');
     
-    if (target) {
+    // ✅ Validación: verificar que el href sea seguro
+    if (!href || href === '#') return;
+    
+    e.preventDefault();
+    const target = document.querySelector(href);
+    
+    if (target && header) {
       const headerHeight = header.offsetHeight;
       const targetPosition = target.offsetTop - headerHeight;
       
@@ -103,9 +118,14 @@ if ('IntersectionObserver' in window) {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const img = entry.target;
-        img.src = img.dataset.src;
-        img.classList.add('loaded');
-        observer.unobserve(img);
+        const src = img.dataset.src;
+        
+        // ✅ Validar que el src sea seguro
+        if (src && (src.startsWith('./') || src.startsWith('assets/') || src.startsWith('http'))) {
+          img.src = src;
+          img.classList.add('loaded');
+          observer.unobserve(img);
+        }
       }
     });
   });
@@ -123,8 +143,7 @@ if (window.innerWidth > 768) {
     const hero = document.querySelector('.hero');
     if (hero) {
       const scrolled = window.pageYOffset;
-      // Limitar el desplazamiento para evitar que se vea cortado
-      const maxOffset = 200; // Máximo desplazamiento en píxeles
+      const maxOffset = 200;
       const offset = Math.min(scrolled * 0.3, maxOffset);
       hero.style.backgroundPositionY = offset + 'px';
     }
@@ -148,12 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========================================
-// Console Message
-// ========================================
-console.log('%c🔥 OROZ BARBER 🔥', 'font-size: 20px; color: #DAA520; font-weight: bold;');
-console.log('%cEstilo, Precisión y Actitud', 'font-size: 14px; color: #999; font-style: italic;');
-
-// ========================================
 // SIMULAR HOVER EN MÓVIL (SERVICIOS)
 // ========================================
 document.querySelectorAll('.servicio-card').forEach(card => {
@@ -164,4 +177,42 @@ document.querySelectorAll('.servicio-card').forEach(card => {
 
     card.classList.add('active');
   });
+});
+
+// ========================================
+// ✅ PROTECCIÓN DE SEGURIDAD
+// ========================================
+
+// Prevenir inyección de scripts maliciosos
+if (esProduccion) {
+  // Deshabilitar click derecho
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  
+  // Prevenir drag & drop de archivos externos
+  document.addEventListener('dragover', e => e.preventDefault());
+  document.addEventListener('drop', e => e.preventDefault());
+}
+
+// ✅ Limpiar URL de parámetros sospechosos al cargar
+window.addEventListener('load', () => {
+  const url = new URL(window.location);
+  const params = url.searchParams;
+  
+  // Lista de parámetros peligrosos comunes en ataques
+  const parametrosPeligrosos = ['<script', 'javascript:', 'onerror', 'onload', 'eval('];
+  
+  let hayParametrosPeligrosos = false;
+  
+  params.forEach((value, key) => {
+    parametrosPeligrosos.forEach(peligroso => {
+      if (value.toLowerCase().includes(peligroso) || key.toLowerCase().includes(peligroso)) {
+        hayParametrosPeligrosos = true;
+      }
+    });
+  });
+  
+  // Si hay parámetros peligrosos, limpiar URL
+  if (hayParametrosPeligrosos && esProduccion) {
+    window.location.href = window.location.origin + window.location.pathname;
+  }
 });

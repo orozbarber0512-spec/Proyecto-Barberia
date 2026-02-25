@@ -3,17 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- ✅ META TAGS DE SEGURIDAD -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  
+  <!-- ✅ Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' https://cdnjs.cloudflare.com;
+    style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline';
+    font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+    img-src 'self' data:;
+    connect-src 'self' https://script.google.com;
+    frame-src 'none';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self' https://script.google.com;
+  ">
+  
   <meta name="description" content="Cancelar o Re-agendar tu cita en Oroz Barber">
+  <meta name="robots" content="noindex, nofollow">
   <title>Cancelar Cita - Oroz Barber</title>
   <link rel="icon" type="image/jpeg" href="oroz-barber.jpeg">
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cinzel:wght@400;600;700&family=Inter:wght@200;300;400;600;700&display=swap" rel="stylesheet">
   
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer">
   
   <!-- CSS -->
   <link rel="stylesheet" href="css/styles.css">
@@ -27,39 +52,44 @@
       
       <!-- Formulario de Cancelación -->
       <div id="formularioCancelacion">
-        <div class="cancelacion-header">
-          <i class="fas fa-calendar-times"></i>
+        <header class="cancelacion-header">
+          <i class="fas fa-calendar-times" aria-hidden="true"></i>
           <h1>Cancelar Cita</h1>
           <p>Ingresa el ID de tu cita para continuar</p>
-        </div>
+        </header>
 
-        <div class="info-box">
+        <aside class="info-box" role="note">
           <p>
-            <i class="fas fa-info-circle"></i>
+            <i class="fas fa-info-circle" aria-hidden="true"></i>
             <strong>Importante:</strong> Solo puedes cancelar con mínimo <strong>1 hora de anticipación</strong>. 
             Puedes encontrar el ID de tu cita en el correo de confirmación que recibiste.
           </p>
-        </div>
+        </aside>
 
-        <form id="formCancelar" class="form-cancelacion">
+        <form id="formCancelar" class="form-cancelacion" novalidate>
           <div class="form-group-cancel">
-            <label for="idCita">ID de la Cita *</label>
+            <label for="idCita">ID de la Cita <abbr title="requerido">*</abbr></label>
             <input 
               type="text" 
               id="idCita" 
               name="idCita" 
               placeholder="Ejemplo: abc123xyz456..."
               required
+              autocomplete="off"
+              maxlength="500"
+              aria-required="true"
+              aria-describedby="id-help"
             >
+            <small id="id-help" class="help-text">Copia y pega el ID desde tu correo de confirmación</small>
           </div>
 
           <div class="botones-cancelacion">
-            <a href="reservas.html" class="btn-cancelacion btn-volver-cancel">
-              <i class="fas fa-arrow-left"></i>
+            <a href="reservas.html" class="btn-cancelacion btn-volver-cancel" rel="noopener">
+              <i class="fas fa-arrow-left" aria-hidden="true"></i>
               Volver
             </a>
             <button type="submit" class="btn-cancelacion btn-cancelar-cita">
-              <i class="fas fa-trash-alt"></i>
+              <i class="fas fa-trash-alt" aria-hidden="true"></i>
               Cancelar Cita
             </button>
           </div>
@@ -67,34 +97,34 @@
       </div>
 
       <!-- Mensaje de Éxito -->
-      <div id="mensajeExito" class="mensaje-resultado" style="display: none;">
-        <i class="fas fa-check-circle"></i>
+      <div id="mensajeExito" class="mensaje-resultado" style="display: none;" role="alert" aria-live="assertive">
+        <i class="fas fa-check-circle" aria-hidden="true"></i>
         <h2>¡Cita Cancelada Exitosamente!</h2>
         <p>Tu cita ha sido cancelada. Esperamos verte pronto.</p>
         <div>
-          <a href="reservas.html" class="btn-nueva-reserva">
-            <i class="fas fa-calendar-plus"></i>
+          <a href="reservas.html" class="btn-nueva-reserva" rel="noopener">
+            <i class="fas fa-calendar-plus" aria-hidden="true"></i>
             Agendar Nueva Cita
           </a>
-          <a href="index.html" class="btn-inicio">
-            <i class="fas fa-home"></i>
+          <a href="index.html" class="btn-inicio" rel="noopener">
+            <i class="fas fa-home" aria-hidden="true"></i>
             Ir al Inicio
           </a>
         </div>
       </div>
 
       <!-- Mensaje de Error -->
-      <div id="mensajeError" class="mensaje-resultado error" style="display: none;">
-        <i class="fas fa-exclamation-circle"></i>
+      <div id="mensajeError" class="mensaje-resultado error" style="display: none;" role="alert" aria-live="assertive">
+        <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
         <h2>No se pudo cancelar</h2>
         <p id="textoError">Ha ocurrido un error. Por favor intenta nuevamente.</p>
         <div>
-          <button onclick="volverFormulario()" class="btn-nueva-reserva">
-            <i class="fas fa-arrow-left"></i>
+          <button onclick="volverFormulario()" class="btn-nueva-reserva" type="button">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
             Intentar de Nuevo
           </button>
-          <a href="index.html" class="btn-inicio">
-            <i class="fas fa-home"></i>
+          <a href="index.html" class="btn-inicio" rel="noopener">
+            <i class="fas fa-home" aria-hidden="true"></i>
             Ir al Inicio
           </a>
         </div>
@@ -106,12 +136,12 @@
   <script src="js/cancelacion.js"></script>
 
   <footer class="footer-simple">
-  <div class="footer-bottom">
-    <p>&copy; 2026 Oroz Barber. Todos los derechos reservados.</p>
-    <p class="footer-developer">
-      Desarrollado por <a href="https://www.linkedin.com/in/juan-duquec" target="_blank" rel="noopener">Juan Jose Duque Castro</a>
-    </p>
-  </div>
-</footer>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Oroz Barber. Todos los derechos reservados.</p>
+      <p class="footer-developer">
+        Desarrollado por <a href="https://www.linkedin.com/in/juan-duquec" target="_blank" rel="noopener noreferrer">Juan Jose Duque Castro</a>
+      </p>
+    </div>
+  </footer>
 </body>
 </html>
