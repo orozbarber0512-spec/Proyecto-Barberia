@@ -1,9 +1,8 @@
 // ✅ Configuración segura
 const CONFIG = {
-    // URL ofuscada
     webAppURL: atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3VlZBWEpkM1dmVEFLVm1yT0pNOVkyMUFZbnpYU3hKSlBQdHZPZmlkaFl1dVF6ZXpTNXJybGhlcFRGS0xpbnVNSkEvZXhlYw=='),
     maxIntentos: 3,
-    timeoutIntentos: 600000 // 10 minutos
+    timeoutIntentos: 600000
 };
 
 // ========================================
@@ -17,8 +16,6 @@ function sanitizarTexto(texto) {
 
 function validarIdCita(idCita) {
     if (!idCita || typeof idCita !== 'string') return false;
-    
-    // Regex actualizada para permitir puntos, guiones y caracteres comunes de IDs de Google
     const regex = /^[a-z0-9_@\.\-\=]+$/i; 
     return regex.test(idCita) && idCita.length > 5;
 }
@@ -64,7 +61,6 @@ const RateLimiter = {
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // ✅ Ocultar logs en producción
     const esProduccion = window.location.hostname !== 'localhost';
     
     if (!esProduccion) {
@@ -80,16 +76,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputIdCita = document.getElementById('idCita');
     const btnReintentar = document.getElementById('btnReintentar');
     
+    // ✅ Configurar botón reintentar
     if (btnReintentar) {
-            btnReintentar.addEventListener('click', volverFormulario);
-    } 
+        btnReintentar.addEventListener('click', () => {
+            volverFormulario();
+        });
+    }
+    
     // ✅ Validar elementos del DOM
     if (!form || !formularioContenedor || !mensajeExito || !mensajeError || !inputIdCita) {
         mostrarError('Error del sistema. Por favor recarga la página.');
         return;
     }
 
-    // 1. AUTO-COMPLETAR ID DESDE URL (con validación)
+    // 1. AUTO-COMPLETAR ID DESDE URL
     const urlParams = new URLSearchParams(window.location.search);
     const idCitaURL = urlParams.get('id');
     
@@ -122,13 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // ✅ Rate Limiting
             if (!RateLimiter.permitirAccion('cancelarCita')) {
                 const minutos = RateLimiter.obtenerTiempoEspera('cancelarCita');
-                mostrarError(`Demasiados intentos. Espera ${minutos} minutos antes de intentar nuevamente.`);
+                mostrarError(`Demasiados intentos. Espera ${minutos} minutos.`);
                 return;
             }
             
             RateLimiter.registrarIntento('cancelarCita');
 
-            // Estado de carga en el botón
             const btnCancelar = form.querySelector('.btn-cancelar-cita');
             const textoOriginal = btnCancelar.innerHTML;
             
@@ -136,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btnCancelar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
 
             try {
-                // ✅ Timeout de 20 segundos
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 20000);
                 
@@ -156,24 +154,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 clearTimeout(timeoutId);
 
-                // ✅ Validar respuesta del servidor
                 if (!response.ok) {
                     throw new Error(`Error del servidor: ${response.status}`);
                 }
 
                 const resultado = await response.json();
                 
-                // ✅ Validar estructura de respuesta
                 if (!resultado || typeof resultado.exito !== 'boolean') {
                     throw new Error('Respuesta inválida del servidor');
                 }
 
-                // Ocultar formulario principal
+                // ✅ SIEMPRE OCULTAR FORMULARIO PRIMERO
                 formularioContenedor.style.display = 'none';
 
                 if (resultado.exito) {
+                    // ✅ ÉXITO: Limpiar input y mostrar mensaje
+                    inputIdCita.value = '';
+                    textoError.textContent = '';
                     mostrarResultado(mensajeExito);
                 } else {
+                    // ❌ ERROR: Mantener ID y mostrar mensaje
                     const mensajeSeguro = sanitizarTexto(resultado.mensaje || 'No se pudo cancelar la cita');
                     textoError.textContent = mensajeSeguro;
                     mostrarResultado(mensajeError);
@@ -183,9 +183,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 formularioContenedor.style.display = 'none';
                 
                 if (error.name === 'AbortError') {
-                    textoError.textContent = 'La petición tardó demasiado. Por favor intenta nuevamente.';
+                    textoError.textContent = 'La petición tardó demasiado. Intenta nuevamente.';
                 } else {
-                    textoError.textContent = 'Error de conexión con el servidor. Intenta más tarde.';
+                    textoError.textContent = 'Error de conexión. Intenta más tarde.';
                 }
                 
                 mostrarResultado(mensajeError);
@@ -198,10 +198,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. FUNCIONES DE APOYO
     function mostrarResultado(elemento) {
+        // Ocultar TODO primero
         mensajeExito.style.display = 'none';
         mensajeError.style.display = 'none';
+        mensajeExito.classList.remove('visible');
+        mensajeError.classList.remove('visible');
+        
+        // Mostrar el elemento correcto
         elemento.style.display = 'block';
         elemento.classList.add('visible');
+        
+        // Scroll suave al mensaje
+        setTimeout(() => {
+            elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
     }
     
     function mostrarError(mensaje) {
@@ -211,27 +221,34 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========================================
-// FUNCIÓN GLOBAL
+// FUNCIÓN GLOBAL PARA REINTENTAR
 // ========================================
 
 function volverFormulario() {
-    // Forzamos la búsqueda de elementos
     const formulario = document.getElementById('formularioCancelacion');
     const mensajeExito = document.getElementById('mensajeExito');
     const mensajeError = document.getElementById('mensajeError');
     const inputId = document.getElementById('idCita');
 
-    // Limpiamos estados de error/éxito
-    if (mensajeExito) mensajeExito.style.display = 'none';
-    if (mensajeError) mensajeError.style.display = 'none';
+    // Ocultar TODOS los mensajes
+    if (mensajeExito) {
+        mensajeExito.style.display = 'none';
+        mensajeExito.classList.remove('visible');
+    }
     
-    // Mostramos el contenedor principal
+    if (mensajeError) {
+        mensajeError.style.display = 'none';
+        mensajeError.classList.remove('visible');
+    }
+    
+    // Mostrar formulario
     if (formulario) {
         formulario.style.display = 'block';
-        formulario.classList.remove('hidden'); // Por si usas clases CSS de visibilidad
+        formulario.style.visibility = 'visible';
+        formulario.style.opacity = '1';
     }
 
-    // Limpiamos el input para un nuevo intento
+    // Limpiar input
     if (inputId) {
         inputId.value = '';
         setTimeout(() => inputId.focus(), 100);
