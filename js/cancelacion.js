@@ -78,7 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const mensajeError = document.getElementById('mensajeError');
     const textoError = document.getElementById('textoError');
     const inputIdCita = document.getElementById('idCita');
-
+    const btnReintentar = document.getElementById('btnReintentar');
+    
+    if (btnReintentar) {
+            btnReintentar.addEventListener('click', volverFormulario);
+    } 
     // ✅ Validar elementos del DOM
     if (!form || !formularioContenedor || !mensajeExito || !mensajeError || !inputIdCita) {
         mostrarError('Error del sistema. Por favor recarga la página.');
@@ -132,9 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
             btnCancelar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
 
             try {
-                // ✅ Timeout de 15 segundos
+                // ✅ Timeout de 20 segundos
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                const timeoutId = setTimeout(() => controller.abort(), 20000);
                 
                 const response = await fetch(CONFIG.webAppURL, {
                     redirect: 'follow',
@@ -211,22 +215,26 @@ document.addEventListener('DOMContentLoaded', () => {
 // ========================================
 
 function volverFormulario() {
+    // Forzamos la búsqueda de elementos
     const formulario = document.getElementById('formularioCancelacion');
     const mensajeExito = document.getElementById('mensajeExito');
     const mensajeError = document.getElementById('mensajeError');
+    const inputId = document.getElementById('idCita');
 
+    // Limpiamos estados de error/éxito
+    if (mensajeExito) mensajeExito.style.display = 'none';
+    if (mensajeError) mensajeError.style.display = 'none';
+    
+    // Mostramos el contenedor principal
     if (formulario) {
-        mensajeExito.style.display = 'none';
-        mensajeError.style.display = 'none';
-        mensajeExito.classList.remove('visible');
-        mensajeError.classList.remove('visible');
         formulario.style.display = 'block';
-        
-        const inputId = document.getElementById('idCita');
-        if(inputId) {
-            inputId.value = '';
-            inputId.focus();
-        }
+        formulario.classList.remove('hidden'); // Por si usas clases CSS de visibilidad
+    }
+
+    // Limpiamos el input para un nuevo intento
+    if (inputId) {
+        inputId.value = '';
+        setTimeout(() => inputId.focus(), 100);
     }
 }
 
