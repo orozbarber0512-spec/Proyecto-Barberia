@@ -18,9 +18,9 @@ function sanitizarTexto(texto) {
 function validarIdCita(idCita) {
     if (!idCita || typeof idCita !== 'string') return false;
     
-    // Los IDs de Google Calendar tienen un formato específico
-    const regex = /^[a-z0-9_@]+$/i;
-    return regex.test(idCita) && idCita.length > 10 && idCita.length < 200;
+    // Regex actualizada para permitir puntos, guiones y caracteres comunes de IDs de Google
+    const regex = /^[a-z0-9_@\.\-\=]+$/i; 
+    return regex.test(idCita) && idCita.length > 5;
 }
 
 // ✅ Rate Limiting
