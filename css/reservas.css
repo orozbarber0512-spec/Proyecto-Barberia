@@ -1017,3 +1017,109 @@ body {
   gap: 10px !important;
   }
 }
+
+/* ========================================
+   NOTIFICACIÓN DE CREDENCIALES GUARDADAS
+   Agregar esto al final de reservas.css
+   ======================================== */
+
+.notificacion-credenciales {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    animation: slideDown 0.4s ease;
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    transition: opacity 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.notif-contenido {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+.notif-contenido i {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.notif-contenido span {
+    flex: 1;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.btn-limpiar-credenciales {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-limpiar-credenciales:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-limpiar-credenciales:active {
+    transform: translateY(0);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive - Móvil */
+@media (max-width: 768px) {
+    .notificacion-credenciales {
+        padding: 12px 15px;
+        margin-bottom: 20px;
+    }
+    
+    .notif-contenido {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .notif-contenido span {
+        text-align: left;
+        font-size: 13px;
+    }
+    
+    .btn-limpiar-credenciales {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 15px;
+    }
+}
+
+/* Variante para modo claro (si lo usas) */
+@media (prefers-color-scheme: light) {
+    .notificacion-credenciales {
+        background: linear-gradient(135deg, #5cb85c 0%, #449d44 100%);
+    }
+}
