@@ -996,4 +996,24 @@ body {
   .mensaje-exito h3 {
     font-size: 24px;
   }
+
+ 
+
+.form-section {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 0 35px 0 !important;
+  }
+
+.form-section legend,
+.form-section > h3 {
+  border: none !important;
+  padding: 0 !important;
+  margin-bottom: 25px !important;
+  float: none !important;
+  width: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  }
 }
