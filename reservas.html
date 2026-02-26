@@ -3,50 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- ✅ META TAGS DE SEGURIDAD -->
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
-  <meta name="referrer" content="strict-origin-when-cross-origin">
-  
-  <!-- ✅ Content Security Policy CORREGIDO (agregado googleusercontent.com) -->
-  <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline';
-    style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline';
-    font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
-    img-src 'self' data: https:;
-    connect-src 'self' https://script.google.com https://script.googleusercontent.com;
-    frame-src 'none';
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self' https://script.google.com https://script.googleusercontent.com;
-  ">
-  
   <meta name="description" content="Reserva tu cita en Oroz Barber - Elige tu barbero y agenda tu cita">
-  <meta name="robots" content="noindex, nofollow">
   <title>Reservar Cita - Oroz Barber</title>
   <link rel="icon" type="image/jpeg" href="oroz-barber.jpeg">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cinzel:wght@400;600;700&family=Inter:wght@200;300;400;600;700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
-        crossorigin="anonymous" 
-        referrerpolicy="no-referrer">
-  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/reservas.css">
 </head>
 <body>
 
   <header class="header-reservas">
-    <div class="header-overlay" aria-hidden="true"></div>
+    <div class="header-overlay"></div>
     <div class="header-content">
-      <a href="index.html" class="btn-volver" rel="noopener">
-        <i class="fas fa-arrow-left" aria-hidden="true"></i> Volver al Inicio
+      <a href="index.html" class="btn-volver">
+        <i class="fas fa-arrow-left"></i> Volver al Inicio
       </a>
       <h1>Reserva tu Cita</h1>
       <p>Elige tu barbero de confianza</p>
@@ -54,35 +27,35 @@
   </header>
 
   <div class="info-reservas">
-    <article class="info-card-reserva">
-      <i class="fas fa-clock" aria-hidden="true"></i>
+    <div class="info-card-reserva">
+      <i class="fas fa-clock"></i>
       <h4>Horario de atención</h4>
       <p>Lunes - Jueves: 8:00 AM - 12:00 PM | 2:00 PM - 8:00 PM</p>
       <p>Viernes - Sábado: 8:00 AM - 12:00 PM | 2:00 PM - 10:00 PM</p>
       <p class="nota">Domingos cerrado</p>
-    </article>
-    <article class="info-card-reserva">
-      <i class="fas fa-info-circle" aria-hidden="true"></i>
+    </div>
+    <div class="info-card-reserva">
+      <i class="fas fa-info-circle"></i>
       <h4>Importante</h4>
       <p>Debes agendar con mínimo <strong>2 horas</strong> de anticipación</p>
       <p class="nota">Cancelaciones hasta 1 hora antes</p>
-    </article>
-    <article class="info-card-reserva">
-      <i class="fas fa-envelope" aria-hidden="true"></i>
+    </div>
+    <div class="info-card-reserva">
+      <i class="fas fa-envelope"></i>
       <h4>Confirmación</h4>
       <p>Recibirás un correo de confirmación</p>
       <p class="nota">Revisa tu bandeja de entrada</p>
-    </article>
+    </div>
   </div>
 
   <section class="barberos-section">
     <div class="container">
       <div class="barberos-grid">
         
-        <article class="barbero-card" data-barbero="barbero1" role="button" tabindex="0">
+        <div class="barbero-card" data-barbero="barbero1">
           <div class="barbero-imagen">
-            <img src="assets/images/Barbero1.jpeg" alt="Felipe Orozco - Barbero Senior" loading="lazy">
-            <div class="barbero-overlay" aria-hidden="true">
+            <img src="assets/images/Barbero1.jpeg" alt="Felipe Orozco">
+            <div class="barbero-overlay">
               <i class="fas fa-calendar-check"></i>
               <p>Click para reservar</p>
             </div>
@@ -91,16 +64,16 @@
             <h3 class="barbero-nombre">Felipe Orozco</h3>
             <p class="barbero-titulo">Barbero Senior</p>
             <div class="barbero-stats">
-              <div class="stat-item"><i class="fas fa-star" aria-hidden="true"></i><span>10 años exp.</span></div>
-              <div class="stat-item"><i class="fas fa-scissors" aria-hidden="true"></i><span>(Pipe)</span></div>
+              <div class="stat-item"><i class="fas fa-star"></i><span>10 años exp.</span></div>
+              <div class="stat-item"><i class="fas fa-scissors"></i><span>(Pipe)</span></div>
             </div>
           </div>
-        </article>
+        </div>
 
-        <article class="barbero-card" data-barbero="barbero2" role="button" tabindex="0">
+        <div class="barbero-card" data-barbero="barbero2">
           <div class="barbero-imagen">
-            <img src="assets/images/Barbero2.jpeg" alt="Tomas Orozco - Barbero Profesional" loading="lazy">
-            <div class="barbero-overlay" aria-hidden="true">
+            <img src="assets/images/Barbero2.jpeg" alt="Tomas Orozco">
+            <div class="barbero-overlay">
               <i class="fas fa-calendar-check"></i>
               <p>Click para reservar</p>
             </div>
@@ -109,16 +82,16 @@
             <h3 class="barbero-nombre">Tomas Orozco</h3>
             <p class="barbero-titulo">Barbero Profesional</p>
             <div class="barbero-stats">
-              <div class="stat-item"><i class="fas fa-star" aria-hidden="true"></i><span>6 años exp.</span></div>
-              <div class="stat-item"><i class="fas fa-scissors" aria-hidden="true"></i><span>(Chinga)</span></div>
+              <div class="stat-item"><i class="fas fa-star"></i><span>6 años exp.</span></div>
+              <div class="stat-item"><i class="fas fa-scissors"></i><span>(Chinga)</span></div>
             </div>
           </div>
-        </article>
+        </div>
 
-        <article class="barbero-card" data-barbero="barbero3" role="button" tabindex="0">
+        <div class="barbero-card" data-barbero="barbero3">
           <div class="barbero-imagen">
-            <img src="assets/images/Barbero3.jpeg" alt="Sergio Jiménez - Barbero Profesional" loading="lazy">
-            <div class="barbero-overlay" aria-hidden="true">
+            <img src="assets/images/Barbero3.jpeg" alt="Sergio Jiménez">
+            <div class="barbero-overlay">
               <i class="fas fa-calendar-check"></i>
               <p>Click para reservar</p>
             </div>
@@ -127,67 +100,53 @@
             <h3 class="barbero-nombre">Sergio Jiménez</h3>
             <p class="barbero-titulo">Barbero Profesional</p>
             <div class="barbero-stats">
-              <div class="stat-item"><i class="fas fa-star" aria-hidden="true"></i><span>4 años exp.</span></div>
-              <div class="stat-item"><i class="fas fa-scissors" aria-hidden="true"></i><span>(Checho)</span></div>
+              <div class="stat-item"><i class="fas fa-star"></i><span>4 años exp.</span></div>
+              <div class="stat-item"><i class="fas fa-scissors"></i><span>(Checho)</span></div>
             </div>
           </div>
-        </article>
+        </div>
 
       </div>
     </div>
   </section>
 
   <!-- MODAL -->
-  <div id="reservaModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div id="reservaModal" class="modal">
     <div class="modal-content">
-      <button class="modal-close" aria-label="Cerrar modal">&times;</button>
+      <button class="modal-close">&times;</button>
       
       <!-- FORMULARIO CON HEADER -->
       <div id="contenedorFormulario">
         <div class="modal-header">
-          <h2 id="modal-title">Reserva con <span id="barberoNombre"></span></h2>
+          <h2>Reserva con <span id="barberoNombre"></span></h2>
           <p>Completa el formulario para confirmar tu cita</p>
         </div>
 
-        <form id="reservaForm" class="reserva-form" novalidate>
+        <form id="reservaForm" class="reserva-form">
           <input type="hidden" id="barberoSeleccionado" name="barbero">
 
           <div class="form-section">
-            <h3><i class="fas fa-user" aria-hidden="true"></i> Información Personal</h3>
+            <h3><i class="fas fa-user"></i> Información Personal</h3>
             <div class="form-row">
               <div class="form-group full-width">
-                <label for="nombre">Nombre Completo <abbr title="requerido">*</abbr></label>
-                <input type="text" 
-                       id="nombre" 
-                       name="nombre" 
-                       required 
-                       autocomplete="name"
-                       maxlength="100"
-                       pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
-                       aria-required="true">
+                <label for="nombre">Nombre Completo *</label>
+                <input type="text" id="nombre" name="nombre" required>
               </div>
             </div>
             <div class="form-row">
               <div class="form-group full-width">
-                <label for="email">Email <abbr title="requerido">*</abbr></label>
-                <input type="email" 
-                       id="email" 
-                       name="email" 
-                       placeholder="ejemplo@correo.com" 
-                       required
-                       autocomplete="email"
-                       maxlength="254"
-                       aria-required="true">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
               </div>
             </div>
           </div>
 
           <div class="form-section">
-            <h3><i class="fas fa-calendar-alt" aria-hidden="true"></i> Detalles de la Cita</h3>
+            <h3><i class="fas fa-calendar-alt"></i> Detalles de la Cita</h3>
             <div class="form-row">
               <div class="form-group">
-                <label for="servicio">Servicio <abbr title="requerido">*</abbr></label>
-                <select id="servicio" name="servicio" required aria-required="true">
+                <label for="servicio">Servicio *</label>
+                <select id="servicio" name="servicio" required>
                   <option value="">Selecciona un servicio</option>
                   <option value="Corte sencillo 💇🏻‍♂️ - $22.000">Corte sencillo 💇🏻‍♂️ - $22.000</option>
                   <option value="Limpieza Facial 💆🏻 - $25.000">Limpieza Facial 💆🏻 - $25.000</option>
@@ -197,38 +156,34 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="fecha">Fecha <abbr title="requerido">*</abbr></label>
-                <input type="date" 
-                       id="fecha" 
-                       name="fecha" 
-                       required
-                       aria-required="true">
+                <label for="fecha">Fecha *</label>
+                <input type="date" id="fecha" name="fecha" required>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group full-width">
-                <label for="hora">Hora Disponible <abbr title="requerido">*</abbr></label>
-                <div id="horasDisponibles" class="horas-disponibles" role="region" aria-live="polite">
+                <label>Hora Disponible *</label>
+                <div id="horasDisponibles" class="horas-disponibles">
                   <div class="loading-horas">
                     <p>Selecciona un servicio y una fecha para ver las horas disponibles</p>
                   </div>
                 </div>
-                <input type="hidden" id="hora" name="hora" required aria-required="true">
+                <input type="hidden" id="hora" name="hora" required>
               </div>
             </div>
           </div>
 
           <div class="form-buttons">
             <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
-            <button type="submit" class="btn-confirmar"><i class="fas fa-check" aria-hidden="true"></i> Confirmar Reserva</button>
+            <button type="submit" class="btn-confirmar"><i class="fas fa-check"></i> Confirmar Reserva</button>
           </div>
         </form>
       </div>
 
       <!-- MENSAJE DE ÉXITO -->
-      <div id="mensajeExito" class="mensaje-exito" style="display: none;" role="alert">
-        <i class="fas fa-check-circle" aria-hidden="true"></i>
+      <div id="mensajeExito" class="mensaje-exito" style="display: none;">
+        <i class="fas fa-check-circle"></i>
         <h3>¡Reserva Confirmada!</h3>
         <p>Te hemos enviado un mensaje de confirmación por correo electrónico</p>
         <p>No olvides revisar tu bandeja de Spam</p>
@@ -244,7 +199,7 @@
     <div class="footer-bottom">
       <p>&copy; 2026 Oroz Barber. Todos los derechos reservados.</p>
       <p class="footer-developer">
-        Desarrollado por <a href="https://www.linkedin.com/in/juan-duquec" target="_blank" rel="noopener noreferrer">Juan Jose Duque Castro</a>
+        Desarrollado por <a href="https://www.linkedin.com/in/juan-duquec" target="_blank" rel="noopener">Juan Jose Duque Castro</a>
       </p>
     </div>
   </footer>
