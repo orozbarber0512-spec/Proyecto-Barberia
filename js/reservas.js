@@ -132,6 +132,16 @@ document.addEventListener('DOMContentLoaded', () => {
   mensajeExito = document.getElementById('mensajeExito');
   contenedorFormulario = document.getElementById('contenedorFormulario');
   
+  const emailGuardado = localStorage.getItem('oroz_barber_email');
+  const nombreGuardado = localStorage.getItem('oroz_barber_nombre');
+
+  if (emailGuardado) {
+    document.getElementById('email').value = emailGuardado;
+  }
+  if (nombreGuardado) {
+    document.getElementById('nombre').value = nombreGuardado;
+  }
+
   if (!modal || !form || !mensajeExito || !contenedorFormulario) {
     mostrarError('Error del sistema. Por favor recarga la página.');
     return;
@@ -396,6 +406,7 @@ async function enviarReserva() {
   // ✅ Recopilar y sanitizar datos
   const nombre = sanitizarTexto(document.getElementById('nombre').value);
   const email = document.getElementById('email').value.trim().toLowerCase();
+  localStorage.setItem('oroz_barber_email', email);
   const fecha = document.getElementById('fecha').value;
   const hora = document.getElementById('hora').value;
   const servicio = document.getElementById('servicio').value;
