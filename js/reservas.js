@@ -107,6 +107,55 @@ const RateLimiter = {
 };
 
 // ========================================
+// GESTIÓN DE HISTORIAL DE DATOS
+// ========================================
+const HistorialForm = {
+  MAX_REGISTROS: 5, // Máximo de sugerencias a mostrar
+  
+  // Guardar un nuevo registro (evita duplicados)
+  guardar(key, valor) {
+    if (!valor || typeof valor !== 'string') return;
+    
+    const historial = this.obtener(key);
+    const valorLimpio = valor.trim().toLowerCase();
+    
+    // Eliminar si ya existe (para moverlo al inicio)
+    const filtrado = historial.filter(v => v.toLowerCase() !== valorLimpio);
+    
+    // Agregar al inicio y limitar cantidad
+    filtrado.unshift(valor.trim());
+    const limitado = filtrado.slice(0, this.MAX_REGISTROS);
+    
+    localStorage.setItem(key, JSON.stringify(limitado));
+  },
+  
+  // Obtener historial como array
+  obtener(key) {
+    try {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  },
+  
+  // Llenar el datalist con opciones
+  cargarSugerencias(key, datalistId) {
+    const datalist = document.getElementById(datalistId);
+    if (!datalist) return;
+    
+    const historial = this.obtener(key);
+    datalist.innerHTML = ''; // Limpiar anteriores
+    
+    historial.forEach(valor => {
+      const option = document.createElement('option');
+      option.value = valor;
+      datalist.appendChild(option);
+    });
+  }
+};
+
+// ========================================
 // VARIABLES GLOBALES
 // ========================================
 let modal, form, mensajeExito, contenedorFormulario;
@@ -131,7 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
   form = document.getElementById('reservaForm');
   mensajeExito = document.getElementById('mensajeExito');
   contenedorFormulario = document.getElementById('contenedorFormulario');
-  
+  HistorialForm.cargarSugerencias('oroz_historial_emails', 'historialEmails');
+  HistorialForm.cargarSugerencias('oroz_historial_nombres', 'historialNombres');
   const emailGuardado = localStorage.getItem('oroz_barber_email');
   const nombreGuardado = localStorage.getItem('oroz_barber_nombre');
 
@@ -485,6 +535,13 @@ async function enviarReserva() {
     
     // ✅ Validar respuesta
     if (resultado && resultado.exito === true) {
+        // 🎯 NUEVO: Guardar en historial para autocompletado futuro
+      HistorialForm.guardar('oroz_historial_emails', email);
+      HistorialForm.guardar('oroz_historial_nombres', nombre);
+  
+      // Mantener compatibilidad con tu código actual
+      localStorage.setItem('oroz_barber_email', email);
+      localStorage.setItem('oroz_barber_nombre', nombre);
       mostrarExito();
     } else {
       mostrarError(resultado.mensaje || 'Error al agendar la cita.');
