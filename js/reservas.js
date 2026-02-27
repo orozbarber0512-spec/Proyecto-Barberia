@@ -1,5 +1,4 @@
 const CONFIG = {
-  // ✅ MEJORA: URL ofuscada (más difícil de extraer con bots)
   webAppURL: atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3VlZBWEpkM1dmVEFLVm1yT0pNOVkyMUFZbnpYU3hKSlBQdHZPZmlkaFl1dVF6ZXpTNXJybGhlcFRGS0xpbnVNSkEvZXhlYw=='),
   
   barberos: {
@@ -8,510 +7,479 @@ const CONFIG = {
     barbero3: 'Sergio Jiménez'
   },
   
-  // ✅ NUEVO: Límites de seguridad
   maxIntentos: 5,
-  timeoutIntentos: 300000, // 5 minutos
+  timeoutIntentos: 300000,
   maxLongitudNombre: 100,
   maxLongitudEmail: 254
+};
+
+// ========================================
+// ⚡ SISTEMA DE CACHÉ (OPTIMIZACIÓN)
+// ========================================
+
+const CacheManager = {
+  cache: {},
+  TIEMPO_VIDA: 300000, // 5 minutos
+  
+  generarClave(barbero, fecha, servicio) {
+    return `${barbero}_${fecha}_${servicio}`;
+  },
+  
+  obtener(barbero, fecha, servicio) {
+    const clave = this.generarClave(barbero, fecha, servicio);
+    const item = this.cache[clave];
+    
+    if (!item) return null;
+    
+    const ahora = Date.now();
+    if (ahora - item.timestamp > this.TIEMPO_VIDA) {
+      delete this.cache[clave];
+      return null;
+    }
+    
+    return item.datos;
+  },
+  
+  guardar(barbero, fecha, servicio, datos) {
+    const clave = this.generarClave(barbero, fecha, servicio);
+    this.cache[clave] = {
+      datos: datos,
+      timestamp: Date.now()
+    };
+  },
+  
+  limpiar() {
+    this.cache = {};
+  }
+};
+
+// ========================================
+// SISTEMA DE RECORDAR CREDENCIALES
+// ========================================
+
+const CredencialesManager = {
+    guardar(nombre, email) {
+        try {
+            localStorage.setItem('oroz_nombre', nombre);
+            localStorage.setItem('oroz_email', email);
+            localStorage.setItem('oroz_guardado_fecha', new Date().toISOString());
+        } catch (e) {
+            console.error('Error guardando credenciales:', e);
+        }
+    },
+    
+    obtener() {
+        try {
+            return {
+                nombre: localStorage.getItem('oroz_nombre') || '',
+                email: localStorage.getItem('oroz_email') || ''
+            };
+        } catch (e) {
+            return { nombre: '', email: '' };
+        }
+    },
+    
+    limpiar() {
+        try {
+            localStorage.removeItem('oroz_nombre');
+            localStorage.removeItem('oroz_email');
+            localStorage.removeItem('oroz_guardado_fecha');
+        } catch (e) {}
+    },
+    
+    tieneGuardadas() {
+        return !!localStorage.getItem('oroz_nombre');
+    }
 };
 
 // ========================================
 // UTILIDADES DE SEGURIDAD
 // ========================================
 
-// ✅ Sanitizar entrada de texto (prevenir XSS)
 function sanitizarTexto(texto) {
   if (!texto || typeof texto !== 'string') return '';
-  
-  return texto
-    .trim()
-    .replace(/[<>\"']/g, '') // Eliminar caracteres peligrosos
-    .substring(0, 200); // Limitar longitud
+  return texto.trim().replace(/[<>\"']/g, '').substring(0, 200);
 }
 
-// ✅ Validar formato de email
 function validarEmail(email) {
   const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return regex.test(email) && email.length <= CONFIG.maxLongitudEmail;
 }
 
-// ✅ Validar nombre (solo letras, espacios y acentos)
 function validarNombre(nombre) {
   if (!nombre || nombre.length < 3 || nombre.length > CONFIG.maxLongitudNombre) {
     return false;
   }
-  
   const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
   return regex.test(nombre);
 }
 
-// ✅ Validar fecha (formato YYYY-MM-DD y fecha futura)
 function validarFecha(fechaStr) {
   const regex = /^\d{4}-\d{2}-\d{2}$/;
   if (!regex.test(fechaStr)) return false;
-  
-  const fecha = new Date(fechaStr + 'T00:00:00');
+  const fecha = new Date(fechaStr);
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
-  
-  // No debe ser domingo (día 0)
-  if (fecha.getDay() === 0) return false;
-  
-  // Debe ser fecha futura
   return fecha >= hoy;
 }
 
-// ✅ Validar hora (formato HH:MM AM/PM)
-function validarHora(horaStr) {
-  const regex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$/;
-  return regex.test(horaStr);
-}
-
-// ✅ Rate Limiting (prevenir spam)
 const RateLimiter = {
   intentos: {},
-  
   registrarIntento(accion) {
     const ahora = Date.now();
-    
-    if (!this.intentos[accion]) {
-      this.intentos[accion] = [];
-    }
-    
-    // Limpiar intentos antiguos (más de 5 minutos)
-    this.intentos[accion] = this.intentos[accion].filter(
-      tiempo => ahora - tiempo < CONFIG.timeoutIntentos
-    );
-    
-    // Registrar nuevo intento
+    if (!this.intentos[accion]) this.intentos[accion] = [];
+    this.intentos[accion] = this.intentos[accion].filter(t => ahora - t < CONFIG.timeoutIntentos);
     this.intentos[accion].push(ahora);
   },
-  
   permitirAccion(accion) {
     if (!this.intentos[accion]) return true;
-    
     return this.intentos[accion].length < CONFIG.maxIntentos;
   },
-  
   obtenerTiempoEspera(accion) {
-    if (!this.intentos[accion] || this.intentos[accion].length === 0) {
-      return 0;
-    }
-    
+    if (!this.intentos[accion] || this.intentos[accion].length === 0) return 0;
     const primerIntento = this.intentos[accion][0];
-    const tiempoTranscurrido = Date.now() - primerIntento;
-    const tiempoRestante = CONFIG.timeoutIntentos - tiempoTranscurrido;
-    
-    return Math.max(0, Math.ceil(tiempoRestante / 1000 / 60)); // minutos
-  }
-};
-
-// ========================================
-// GESTIÓN DE HISTORIAL DE DATOS
-// ========================================
-const HistorialForm = {
-  MAX_REGISTROS: 5, // Máximo de sugerencias a mostrar
-  
-  // Guardar un nuevo registro (evita duplicados)
-  guardar(key, valor) {
-    if (!valor || typeof valor !== 'string') return;
-    
-    const historial = this.obtener(key);
-    const valorLimpio = valor.trim().toLowerCase();
-    
-    // Eliminar si ya existe (para moverlo al inicio)
-    const filtrado = historial.filter(v => v.toLowerCase() !== valorLimpio);
-    
-    // Agregar al inicio y limitar cantidad
-    filtrado.unshift(valor.trim());
-    const limitado = filtrado.slice(0, this.MAX_REGISTROS);
-    
-    localStorage.setItem(key, JSON.stringify(limitado));
-  },
-  
-  // Obtener historial como array
-  obtener(key) {
-    try {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : [];
-    } catch {
-      return [];
-    }
-  },
-  
-  // Llenar el datalist con opciones
-  cargarSugerencias(key, datalistId) {
-    const datalist = document.getElementById(datalistId);
-    if (!datalist) return;
-    
-    const historial = this.obtener(key);
-    datalist.innerHTML = ''; // Limpiar anteriores
-    
-    historial.forEach(valor => {
-      const option = document.createElement('option');
-      option.value = valor;
-      datalist.appendChild(option);
-    });
+    const tiempoRestante = CONFIG.timeoutIntentos - (Date.now() - primerIntento);
+    return Math.max(0, Math.ceil(tiempoRestante / 1000 / 60));
   }
 };
 
 // ========================================
 // VARIABLES GLOBALES
 // ========================================
-let modal, form, mensajeExito, contenedorFormulario;
-let barberoActual = '';
-let servicioActual = '';
-let fechaActual = '';
+
+let barberoActual = null;
+
+// ⚡ OPTIMIZACIÓN: Debouncing para evitar múltiples llamadas
+let timeoutCarga = null;
 
 // ========================================
 // INICIALIZACIÓN
 // ========================================
+
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ MEJORA: Ocultar logs en producción
-  const esProduccion = window.location.hostname !== 'localhost' && 
-                       !window.location.hostname.includes('127.0.0.1');
-  
+  const esProduccion = window.location.hostname !== 'localhost';
   if (!esProduccion) {
-    console.log('%c💈 Sistema de Reservas - Oroz Barber v3.0 SEGURO', 'font-size: 16px; color: #DAA520; font-weight: bold;');
+    console.log('%c⚡ Sistema Optimizado v3.0', 'color: #4CAF50; font-weight: bold;');
   }
-  
-  // Inicializar referencias del DOM
-  modal = document.getElementById('reservaModal');
-  form = document.getElementById('reservaForm');
-  mensajeExito = document.getElementById('mensajeExito');
-  contenedorFormulario = document.getElementById('contenedorFormulario');
-  HistorialForm.cargarSugerencias('oroz_historial_emails', 'historialEmails');
-  HistorialForm.cargarSugerencias('oroz_historial_nombres', 'historialNombres');
-  const emailGuardado = localStorage.getItem('oroz_barber_email');
-  const nombreGuardado = localStorage.getItem('oroz_barber_nombre');
-
-  if (emailGuardado) {
-    document.getElementById('email').value = emailGuardado;
-  }
-  if (nombreGuardado) {
-    document.getElementById('nombre').value = nombreGuardado;
-  }
-
-  if (!modal || !form || !mensajeExito || !contenedorFormulario) {
-    mostrarError('Error del sistema. Por favor recarga la página.');
-    return;
-  }
-  
-  configurarFecha();
-  configurarBarberos();
-  configurarModal();
-  configurarFormulario();
+  configurarEventos();
+  configurarFechaMinima();
 });
 
-// ========================================
-// CONFIGURAR FECHA
-// ========================================
-function configurarFecha() {
-  const inputFecha = document.getElementById('fecha');
-  const hoy = new Date().toISOString().split('T')[0];
-  inputFecha.setAttribute('min', hoy);
-  
-  // ✅ Límite máximo: 3 meses en el futuro
-  const maxFecha = new Date();
-  maxFecha.setMonth(maxFecha.getMonth() + 3);
-  inputFecha.setAttribute('max', maxFecha.toISOString().split('T')[0]);
-  
-  inputFecha.addEventListener('click', function() {
-    if (this.showPicker) this.showPicker();
-  });
-  
-  inputFecha.addEventListener('input', (e) => {
-    const fechaValor = e.target.value;
-    
-    // ✅ Validación de seguridad
-    if (!validarFecha(fechaValor)) {
-      mostrarError('Fecha no válida. Por favor selecciona otra fecha.');
-      e.target.value = '';
-      return;
-    }
-    
-    const fecha = new Date(fechaValor + 'T00:00:00');
-    if (fecha.getDay() === 0) {
-      mostrarError('Lo sentimos, no trabajamos los domingos.');
-      e.target.value = '';
-      return;
-    }
-    
-    fechaActual = fechaValor;
-    cargarHorasDisponibles();
-  });
-  
-  const selectServicio = document.getElementById('servicio');
-  selectServicio.addEventListener('change', (e) => {
-    servicioActual = sanitizarTexto(e.target.value);
-    cargarHorasDisponibles();
-  });
-}
-
-// ========================================
-// CONFIGURAR BARBEROS
-// ========================================
-function configurarBarberos() {
+function configurarEventos() {
   document.querySelectorAll('.barbero-card').forEach(card => {
     card.addEventListener('click', () => {
-      const barberoId = card.getAttribute('data-barbero');
-      
-      // ✅ Validación: verificar que el barbero existe
-      if (!CONFIG.barberos[barberoId]) {
-        mostrarError('Barbero no válido.');
-        return;
-      }
-      
-      barberoActual = barberoId;
-      abrirModal(barberoId);
+      const barberoId = card.dataset.barbero;
+      const nombreBarbero = CONFIG.barberos[barberoId];
+      if (nombreBarbero) abrirModal(barberoId, nombreBarbero);
+    });
+    
+    card.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') card.click();
     });
   });
-}
-
-// ========================================
-// CONFIGURAR MODAL
-// ========================================
-function configurarModal() {
+  
   const btnCerrar = document.querySelector('.modal-close');
-  if (btnCerrar) {
-    btnCerrar.addEventListener('click', cerrarModal);
+  if (btnCerrar) btnCerrar.addEventListener('click', cerrarModal);
+  
+  const modal = document.getElementById('reservaModal');
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) cerrarModal(); });
+  
+  const selectServicio = document.getElementById('servicio');
+  const inputFecha = document.getElementById('fecha');
+  
+  if (selectServicio && inputFecha) {
+    // ⚡ OPTIMIZACIÓN: Debouncing
+    selectServicio.addEventListener('change', () => {
+      clearTimeout(timeoutCarga);
+      timeoutCarga = setTimeout(cargarHorasDisponibles, 300);
+    });
+    inputFecha.addEventListener('change', () => {
+      clearTimeout(timeoutCarga);
+      timeoutCarga = setTimeout(cargarHorasDisponibles, 300);
+    });
   }
   
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.style.display === 'block') {
-      cerrarModal();
-    }
-  });
+  const form = document.getElementById('reservaForm');
+  if (form) form.addEventListener('submit', procesarReserva);
 }
 
-// ========================================
-// ABRIR/CERRAR MODAL
-// ========================================
-function abrirModal(barbero) {
-  const nombreBarbero = CONFIG.barberos[barbero];
-  document.getElementById('barberoNombre').textContent = nombreBarbero;
-  document.getElementById('barberoSeleccionado').value = nombreBarbero;
-  
-  modal.style.display = 'block';
-  document.body.style.overflow = 'hidden';
-  
-  contenedorFormulario.style.display = 'block';
-  mensajeExito.style.display = 'none';
-  
-  form.reset();
-  servicioActual = '';
-  fechaActual = '';
-  
-  mostrarMensajeHoras('Selecciona un servicio y una fecha para ver las horas disponibles');
+function abrirModal(barberoId, nombreBarbero) {
+    barberoActual = barberoId;
+    
+    const modal = document.getElementById('reservaModal');
+    const nombreSpan = document.getElementById('barberoNombre');
+    const inputBarbero = document.getElementById('barberoSeleccionado');
+    
+    if (nombreSpan) nombreSpan.textContent = nombreBarbero;
+    if (inputBarbero) inputBarbero.value = nombreBarbero;
+    
+    document.getElementById('reservaForm').reset();
+    document.getElementById('hora').value = '';
+    
+    // Autocompletar credenciales
+    const credenciales = CredencialesManager.obtener();
+    if (credenciales.nombre) document.getElementById('nombre').value = credenciales.nombre;
+    if (credenciales.email) document.getElementById('email').value = credenciales.email;
+    
+    if (CredencialesManager.tieneGuardadas()) mostrarNotificacionCredenciales();
+    
+    const inputFecha = document.getElementById('fecha');
+    if (inputFecha) {
+        const hoy = new Date();
+        hoy.setDate(hoy.getDate() + 1);
+        inputFecha.min = hoy.toISOString().split('T')[0];
+    }
+    
+    const contenedorHoras = document.getElementById('horasDisponibles');
+    if (contenedorHoras) {
+        contenedorHoras.innerHTML = '<div class="loading-horas"><p>Selecciona un servicio y una fecha</p></div>';
+    }
+    
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
 }
 
 function cerrarModal() {
-  modal.style.display = 'none';
-  document.body.style.overflow = 'auto';
-  contenedorFormulario.style.display = 'block';
-  mensajeExito.style.display = 'none';
-  form.reset();
+  const modal = document.getElementById('reservaModal');
+  const mensajeExito = document.getElementById('mensajeExito');
+  const formulario = document.getElementById('contenedorFormulario');
+  
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => {
+      modal.style.display = 'none';
+      if (mensajeExito) mensajeExito.style.display = 'none';
+      if (formulario) formulario.style.display = 'block';
+      document.getElementById('reservaForm').reset();
+      document.getElementById('hora').value = '';
+    }, 300);
+  }
+}
+
+function mostrarNotificacionCredenciales() {
+    if (document.querySelector('.notificacion-credenciales')) return;
+    
+    const notificacion = document.createElement('div');
+    notificacion.className = 'notificacion-credenciales';
+    notificacion.innerHTML = `
+        <div class="notif-contenido">
+            <i class="fas fa-check-circle"></i>
+            <span>Datos autocompletados de tu última reserva</span>
+            <button onclick="limpiarCredencialesGuardadas()" class="btn-limpiar-credenciales" type="button">
+                <i class="fas fa-times"></i> Limpiar
+            </button>
+        </div>
+    `;
+    
+    const formulario = document.getElementById('contenedorFormulario');
+    if (formulario) {
+        formulario.insertBefore(notificacion, formulario.firstChild);
+        setTimeout(() => {
+            notificacion.style.opacity = '0';
+            setTimeout(() => notificacion.remove(), 300);
+        }, 6000);
+    }
+}
+
+function limpiarCredencialesGuardadas() {
+    if (confirm('¿Deseas borrar tus datos guardados?')) {
+        CredencialesManager.limpiar();
+        document.getElementById('nombre').value = '';
+        document.getElementById('email').value = '';
+        const notificacion = document.querySelector('.notificacion-credenciales');
+        if (notificacion) notificacion.remove();
+        alert('✅ Datos eliminados correctamente');
+    }
+}
+
+function configurarFechaMinima() {
+  const inputFecha = document.getElementById('fecha');
+  if (!inputFecha) return;
+  const hoy = new Date();
+  hoy.setDate(hoy.getDate() + 1);
+  inputFecha.min = hoy.toISOString().split('T')[0];
 }
 
 // ========================================
-// CARGAR HORAS DISPONIBLES 
+// ⚡ CARGAR HORAS OPTIMIZADO CON CACHÉ
 // ========================================
+
 async function cargarHorasDisponibles() {
-  if (!servicioActual || !fechaActual || !barberoActual) return;
+  const servicio = document.getElementById('servicio').value;
+  const fecha = document.getElementById('fecha').value;
+  const contenedorHoras = document.getElementById('horasDisponibles');
+  const inputHora = document.getElementById('hora');
   
-  if (!RateLimiter.permitirAccion('cargarHoras')) {
-    const minutos = RateLimiter.obtenerTiempoEspera('cargarHoras');
-    mostrarError(`Demasiados intentos. Espera ${minutos} minutos.`);
+  if (!contenedorHoras) return;
+  
+  if (!servicio || !fecha) {
+    contenedorHoras.innerHTML = '<div class="loading-horas"><p>Selecciona un servicio y una fecha</p></div>';
     return;
   }
   
-  RateLimiter.registrarIntento('cargarHoras');
-  mostrarCargando();
+  const barbero = CONFIG.barberos[barberoActual];
+  
+  // ⚡ OPTIMIZACIÓN: Verificar caché primero
+  const horasCacheadas = CacheManager.obtener(barbero, fecha, servicio);
+  if (horasCacheadas) {
+    console.log('⚡ Usando horas desde caché');
+    mostrarHorasDisponibles(horasCacheadas);
+    return;
+  }
+  
+  // ⚡ OPTIMIZACIÓN: Loading optimista
+  contenedorHoras.innerHTML = '<div class="loading-horas"><i class="fas fa-spinner fa-spin"></i><p>Cargando...</p></div>';
+  inputHora.value = '';
   
   try {
-    const barberoNombre = CONFIG.barberos[barberoActual];
+    const url = `${CONFIG.webAppURL}?action=obtenerHoras&barbero=${encodeURIComponent(barbero)}&fecha=${fecha}&servicio=${encodeURIComponent(servicio)}`;
     
-    const params = new URLSearchParams({
-      action: 'obtenerHoras',
-      barbero: barberoNombre,
-      fecha: fechaActual,
-      servicio: servicioActual
-    });
-    
-    const url = `${CONFIG.webAppURL}?${params.toString()}`;
+    // ⚡ OPTIMIZACIÓN: Timeout reducido
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seg en vez de 15
     
-    const response = await fetch(url, { 
-      signal: controller.signal,
-      headers: { 'Accept': 'application/json' }
+    const response = await fetch(url, {
+      method: 'GET',
+      signal: controller.signal
     });
     
     clearTimeout(timeoutId);
+    
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    
     const resultado = await response.json();
     
-    // --- NUEVA LÓGICA DE BLOQUEO ---
-    if (resultado.exito === false && resultado.bloqueado === true) {
-      // Muestra el mensaje personalizado que viene del Google Script
-      mostrarMensajeHoras(resultado.mensaje);
-      return; 
+    if (!resultado || typeof resultado.exito !== 'boolean') {
+      throw new Error('Respuesta inválida');
     }
-    // -------------------------------
-
-    if (resultado.exito && Array.isArray(resultado.horas) && resultado.horas.length > 0) {
-      const horasValidas = resultado.horas.filter(hora => validarHora(hora));
-      
-      if (horasValidas.length > 0) {
-        mostrarHoras(horasValidas);
-      } else {
-        mostrarMensajeHoras('❌ No hay horarios disponibles para este servicio');
-      }
+    
+    if (resultado.bloqueado) {
+      contenedorHoras.innerHTML = `
+        <div class="error-horas">
+          <i class="fas fa-calendar-times"></i>
+          <p>${sanitizarTexto(resultado.mensaje)}</p>
+        </div>
+      `;
+      return;
+    }
+    
+    if (resultado.exito && resultado.horas && resultado.horas.length > 0) {
+      // ⚡ GUARDAR EN CACHÉ
+      CacheManager.guardar(barbero, fecha, servicio, resultado.horas);
+      mostrarHorasDisponibles(resultado.horas);
     } else {
-      mostrarMensajeHoras('❌ No hay horarios disponibles para esta fecha');
+      contenedorHoras.innerHTML = `
+        <div class="error-horas">
+          <i class="fas fa-calendar-times"></i>
+          <p>No hay horarios disponibles. Intenta otro día.</p>
+        </div>
+      `;
     }
     
   } catch (error) {
+    console.error('Error:', error);
+    
+    let mensajeError = 'Error al cargar horarios.';
     if (error.name === 'AbortError') {
-      mostrarError('La petición tardó demasiado. Intenta nuevamente.');
-    } else {
-      mostrarError('Error al cargar horarios. Por favor intenta nuevamente.');
+      mensajeError = 'La petición tardó demasiado.';
     }
+    
+    contenedorHoras.innerHTML = `
+      <div class="error-horas">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>${mensajeError}</p>
+        <button onclick="cargarHorasDisponibles()" class="btn-reintentar">
+          <i class="fas fa-redo"></i> Reintentar
+        </button>
+      </div>
+    `;
   }
 }
 
-function mostrarCargando() {
+function mostrarHorasDisponibles(horas) {
   const contenedorHoras = document.getElementById('horasDisponibles');
-  contenedorHoras.innerHTML = `
-    <div class="loading-horas">
-      <i class="fas fa-spinner fa-spin"></i>
-      <p>Cargando horarios disponibles...</p>
-    </div>
-  `;
-}
-
-function mostrarMensajeHoras(mensaje) {
-  const contenedorHoras = document.getElementById('horasDisponibles');
-  // ✅ Sanitizar mensaje antes de mostrar
-  const mensajeSanitizado = sanitizarTexto(mensaje);
-  contenedorHoras.innerHTML = `
-    <div class="loading-horas">
-      <p>${mensajeSanitizado}</p>
-    </div>
-  `;
-}
-
-function mostrarHoras(horas) {
-  const contenedorHoras = document.getElementById('horasDisponibles');
+  const inputHora = document.getElementById('hora');
+  
+  if (!contenedorHoras) return;
+  
   contenedorHoras.innerHTML = '';
   
-  const grid = document.createElement('div');
-  grid.className = 'horas-grid';
-  
   horas.forEach(hora => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'hora-btn';
-    // ✅ Usar textContent en lugar de innerHTML (previene XSS)
-    btn.textContent = hora;
-    btn.onclick = () => seleccionarHora(hora, btn);
-    grid.appendChild(btn);
-  });
-  
-  contenedorHoras.appendChild(grid);
-}
-
-function seleccionarHora(hora, btn) {
-  // ✅ Validar hora antes de guardar
-  if (!validarHora(hora)) {
-    mostrarError('Hora no válida.');
-    return;
-  }
-  
-  document.querySelectorAll('.hora-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  document.getElementById('hora').value = hora;
-}
-
-// ========================================
-// CONFIGURAR FORMULARIO
-// ========================================
-function configurarFormulario() {
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    await enviarReserva();
+    const botonHora = document.createElement('button');
+    botonHora.type = 'button';
+    botonHora.className = 'hora-disponible';
+    botonHora.textContent = hora;
+    
+    botonHora.addEventListener('click', () => {
+      document.querySelectorAll('.hora-disponible').forEach(btn => btn.classList.remove('seleccionada'));
+      botonHora.classList.add('seleccionada');
+      inputHora.value = hora;
+    });
+    
+    contenedorHoras.appendChild(botonHora);
   });
 }
 
 // ========================================
-// ENVIAR RESERVA
+// PROCESAR RESERVA
 // ========================================
-async function enviarReserva() {
-  // ✅ Rate Limiting para envío de reservas
-  if (!RateLimiter.permitirAccion('enviarReserva')) {
-    const minutos = RateLimiter.obtenerTiempoEspera('enviarReserva');
-    mostrarError(`Demasiados intentos. Espera ${minutos} minutos.`);
+
+async function procesarReserva(e) {
+  e.preventDefault();
+  
+  const datos = {
+    nombre: sanitizarTexto(document.getElementById('nombre').value),
+    email: sanitizarTexto(document.getElementById('email').value),
+    servicio: document.getElementById('servicio').value,
+    fecha: document.getElementById('fecha').value,
+    hora: document.getElementById('hora').value,
+    barbero: CONFIG.barberos[barberoActual]
+  };
+  
+  if (!validarNombre(datos.nombre)) {
+    alert('⚠️ Nombre inválido (3-100 caracteres, solo letras)');
     return;
   }
   
-  // ✅ Recopilar y sanitizar datos
-  const nombre = sanitizarTexto(document.getElementById('nombre').value);
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  localStorage.setItem('oroz_barber_email', email);
-  const fecha = document.getElementById('fecha').value;
-  const hora = document.getElementById('hora').value;
-  const servicio = document.getElementById('servicio').value;
-  const barbero = CONFIG.barberos[barberoActual];
-  
-  // ✅ VALIDACIONES EXHAUSTIVAS
-  if (!validarNombre(nombre)) {
-    mostrarError('Por favor ingresa un nombre válido (solo letras).');
+  if (!validarEmail(datos.email)) {
+    alert('⚠️ Email inválido');
     return;
   }
   
-  if (!validarEmail(email)) {
-    mostrarError('Por favor ingresa un email válido.');
+  if (!validarFecha(datos.fecha)) {
+    alert('⚠️ Fecha inválida');
     return;
   }
   
-  if (!validarFecha(fecha)) {
-    mostrarError('Por favor selecciona una fecha válida.');
+  if (!datos.hora) {
+    alert('⚠️ Selecciona un horario');
     return;
   }
   
-  if (!validarHora(hora)) {
-    mostrarError('Por favor selecciona una hora válida.');
+  if (!RateLimiter.permitirAccion('reservar')) {
+    const minutos = RateLimiter.obtenerTiempoEspera('reservar');
+    alert(`⚠️ Demasiados intentos. Espera ${minutos} minutos.`);
     return;
   }
   
-  if (!servicio || servicio === '') {
-    mostrarError('Por favor selecciona un servicio.');
-    return;
-  }
+  RateLimiter.registrarIntento('reservar');
   
-  if (!barbero) {
-    mostrarError('Por favor selecciona un barbero.');
-    return;
-  }
+  const btnSubmit = document.querySelector('.btn-confirmar');
+  const textoOriginal = btnSubmit.innerHTML;
   
-  const datos = { barbero, nombre, email, fecha, hora, servicio };
-  
-  const btnConfirmar = document.querySelector('.btn-confirmar');
-  const textoOriginal = btnConfirmar.innerHTML;
-  btnConfirmar.disabled = true;
-  btnConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+  btnSubmit.disabled = true;
+  btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
   
   try {
-    RateLimiter.registrarIntento('enviarReserva');
-    
-    // ✅ Timeout de 15 segundos
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seg en vez de 20
     
     const response = await fetch(CONFIG.webAppURL, {
-      redirect: 'follow',
       method: 'POST',
       signal: controller.signal,
-      headers: { 
+      headers: {
         'Content-Type': 'text/plain',
         'Accept': 'application/json'
       },
@@ -520,104 +488,50 @@ async function enviarReserva() {
     
     clearTimeout(timeoutId);
     
-    const textoRespuesta = await response.text();
-    let resultado;
-
-    try {
-      resultado = JSON.parse(textoRespuesta);
-    } catch (e) {
-      if (response.ok) {
-        mostrarExito();
-        return;
-      }
-      throw new Error("Respuesta del servidor no válida");
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    
+    const resultado = await response.json();
+    
+    if (!resultado || typeof resultado.exito !== 'boolean') {
+      throw new Error('Respuesta inválida');
     }
     
-    // ✅ Validar respuesta
-    if (resultado && resultado.exito === true) {
-        // 🎯 NUEVO: Guardar en historial para autocompletado futuro
-      HistorialForm.guardar('oroz_historial_emails', email);
-      HistorialForm.guardar('oroz_historial_nombres', nombre);
-  
-      // Mantener compatibilidad con tu código actual
-      localStorage.setItem('oroz_barber_email', email);
-      localStorage.setItem('oroz_barber_nombre', nombre);
-      mostrarExito();
+    if (resultado.exito) {
+      // ⚡ Guardar credenciales y limpiar caché
+      CredencialesManager.guardar(datos.nombre, datos.email);
+      CacheManager.limpiar(); // Limpiar caché después de reservar
+      
+      mostrarMensajeExito();
     } else {
-      mostrarError(resultado.mensaje || 'Error al agendar la cita.');
-      btnConfirmar.disabled = false;
-      btnConfirmar.innerHTML = textoOriginal;
+      const mensajeSeguro = sanitizarTexto(resultado.mensaje || 'No se pudo completar la reserva');
+      alert('❌ ' + mensajeSeguro);
     }
     
   } catch (error) {
-    if (error.name === 'AbortError') {
-      mostrarError('La petición tardó demasiado. Por favor intenta nuevamente.');
-    } else {
-      mostrarError('Error de conexión. Por favor intenta nuevamente.');
-    }
+    console.error('Error:', error);
+    let mensajeError = 'Error al procesar la reserva.';
+    if (error.name === 'AbortError') mensajeError = 'La petición tardó demasiado.';
+    alert('❌ ' + mensajeError);
     
-    btnConfirmar.disabled = false;
-    btnConfirmar.innerHTML = textoOriginal;
+  } finally {
+    btnSubmit.disabled = false;
+    btnSubmit.innerHTML = textoOriginal;
   }
 }
 
-// ========================================
-// MOSTRAR MENSAJE DE ÉXITO
-// ========================================
-function mostrarExito() {
-  if (!contenedorFormulario || !mensajeExito) return;
-  
-  contenedorFormulario.style.display = 'none';
-  void mensajeExito.offsetHeight;
-  mensajeExito.style.display = 'block';
-  modal.style.display = 'block';
-  document.body.style.overflow = 'hidden';
-
-  const modalContent = document.querySelector('.modal-content');
-  if (modalContent) {
-    modalContent.scrollTop = 0;
-  }
-  
-  setTimeout(() => {
-    const btnConfirmar = document.querySelector('.btn-confirmar');
-    if (btnConfirmar) {
-      btnConfirmar.disabled = false;
-      btnConfirmar.innerHTML = '<i class="fas fa-check"></i> Confirmar Reserva';
-    }
-  }, 3000);
+function mostrarMensajeExito() {
+  const formulario = document.getElementById('contenedorFormulario');
+  const mensajeExito = document.getElementById('mensajeExito');
+  if (formulario) formulario.style.display = 'none';
+  if (mensajeExito) mensajeExito.style.display = 'block';
 }
 
 // ========================================
-// MOSTRAR ERROR
+// PROTECCIÓN
 // ========================================
-function mostrarError(mensaje) {
-  // ✅ Sanitizar mensaje de error
-  const mensajeSanitizado = sanitizarTexto(mensaje);
-  alert('⚠️ ' + mensajeSanitizado);
-}
 
-// ========================================
-// BOTÓN VOLVER
-// ========================================
-const btnVolver = document.querySelector('.btn-volver');
-if (btnVolver) {
-  btnVolver.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.location.href = 'index.html';
-  });
-}
-
-// ✅ PROTECCIÓN: Deshabilitar inspección excesiva en producción
 if (window.location.hostname !== 'localhost') {
-  // Deshabilitar click derecho
   document.addEventListener('contextmenu', e => e.preventDefault());
-  
-  // Detectar DevTools abierto (dificulta robo de API)
-  setInterval(() => {
-    const threshold = 160;
-    if (window.outerWidth - window.innerWidth > threshold || 
-        window.outerHeight - window.innerHeight > threshold) {
-      // DevTools abierto - puedes tomar acciones aquí
-    }
-  }, 1000);
 }
+
+console.log('%c⚡ Sistema Optimizado Cargado', 'color: #4CAF50; font-weight: bold;');
